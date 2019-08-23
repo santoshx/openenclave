@@ -50,6 +50,25 @@ typedef DWORD oe_thread_key;
 #endif
 
 /**
+ * Create a platform-specific thread.
+ *
+ * @param func The pointer to the start routine.
+ * @param arg The argument to the start routine.
+ *
+ * @returns Returns zero on success.
+ */
+int oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg);
+
+/**
+ * Join a platform-specific thread.
+ *
+ * @param thread The thread to be joined.
+ *
+ * @returns Returns zero on success.
+ */
+int oe_thread_join(oe_thread thread);
+
+/**
  * Returns the identifier of the current thread.
  *
  * This function returns the identifier of the calling thread. Two thread

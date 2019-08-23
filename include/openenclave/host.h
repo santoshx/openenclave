@@ -317,6 +317,24 @@ void oe_free_key(
     uint8_t* key_info,
     size_t key_info_size);
 
+/**
+ * Start the switchless call manager for the enclave. This should be done
+ * right after enclave creation for any enclave that has switchless ocalls.
+ *
+ * @param enclave The enclave handle.
+ * @param num_host_workers The number of host worker threads that are
+ * dedicated to servicing switchless ocalls.
+ *
+ * @retval OE_OK The switchless manager is successfully started.
+ * @retval OE_UNEXPECTED Something unexpected happened, e.g. the switchless
+ * manager is already started.
+ * @retval OE_INVALID_PARAMETER The enclave or num_host_workers is not valid.
+ * @retval OE_FAILURE The worker threads are not created properly.
+ */
+oe_result_t oe_start_switchless_manager(
+    oe_enclave_t* enclave,
+    uint32_t num_host_workers);
+
 OE_EXTERNC_END
 
 #endif /* _OE_HOST_H */

@@ -13,6 +13,22 @@
 **==============================================================================
 */
 
+int oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg)
+{
+    *thread = CreateThread(NULL, 0, func, arg, 0, NULL);
+    return *thread == NULL;
+}
+
+int oe_thread_join(oe_thread thread)
+{
+    if (WaitForSingleObject(thread, INFINITE) == WAIT_OBJECT_0)
+    {
+        CloseHandle(thread);
+        return 0;
+    }
+    return 1;
+}
+
 oe_thread oe_thread_self(void)
 {
     return GetCurrentThreadId();

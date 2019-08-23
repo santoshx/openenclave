@@ -136,7 +136,8 @@ if (OE_SGX)
     sgx/sgxmeasure.c
     sgx/sgxquote.c
     sgx/sgxsign.c
-    sgx/sgxtypes.c)
+    sgx/sgxtypes.c
+    sgx/switchless.c)
 
   # OS specific as well.
   if (UNIX)

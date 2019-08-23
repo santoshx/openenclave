@@ -64,6 +64,8 @@ int main(int argc, const char* argv[])
         return 1;
     }
 
+    OE_TEST(oe_start_switchless_manager(enclave, 2) == OE_OK);
+
     OE_TEST(configure(enclave, g_enabled) == OE_OK);
 
     // TODO: Sort these alphabetically.

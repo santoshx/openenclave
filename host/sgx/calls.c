@@ -26,6 +26,7 @@
 #include <openenclave/internal/raise.h>
 #include <openenclave/internal/registers.h>
 #include <openenclave/internal/sgxtypes.h>
+#include <openenclave/internal/switchless.h>
 #include <openenclave/internal/utils.h>
 #include "../calls.h"
 #include "../hostthread.h"
@@ -245,16 +246,14 @@ done:
 /*
 **==============================================================================
 **
-** _handle_call_host_function()
+** oe_handle_call_host_function()
 **
 ** Handle calls from the enclave.
 **
 **==============================================================================
 */
 
-static oe_result_t _handle_call_host_function(
-    uint64_t arg,
-    oe_enclave_t* enclave)
+oe_result_t oe_handle_call_host_function(uint64_t arg, oe_enclave_t* enclave)
 {
     oe_call_host_function_args_t* args_ptr = NULL;
     oe_result_t result = OE_OK;
@@ -358,6 +357,7 @@ static const char* oe_ecall_str(oe_func_t ecall)
     {
         "DESTRUCTOR",
         "INIT_ENCLAVE",
+        "INIT_SWITCHLESS",
         "CALL_ENCLAVE_FUNCTION",
         "VIRTUAL_EXCEPTION_HANDLER"
     };
@@ -408,7 +408,7 @@ static oe_result_t _handle_ocall(
     switch ((oe_func_t)func)
     {
         case OE_OCALL_CALL_HOST_FUNCTION:
-            _handle_call_host_function(arg_in, enclave);
+            oe_handle_call_host_function(arg_in, enclave);
             break;
 
         case OE_OCALL_MALLOC:

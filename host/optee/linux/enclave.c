@@ -86,7 +86,7 @@ static void _initialize_enclave_host()
     oe_register_syscall_ocall_function_table();
 }
 
-static oe_result_t _handle_call_host_function(
+oe_result_t oe_handle_call_host_function(
     void* inout_buffer,
     size_t inout_buffer_size,
     void* input_buffer,
@@ -187,7 +187,7 @@ static TEEC_Result _handle_generic_rpc(
     switch ((oe_func_t)func)
     {
         case OE_OCALL_CALL_HOST_FUNCTION:
-            _handle_call_host_function(
+            oe_handle_call_host_function(
                 inout_buffer,
                 inout_buffer_size,
                 input_buffer,

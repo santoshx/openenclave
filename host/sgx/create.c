@@ -45,6 +45,7 @@ static char* get_fullpath(const char* path)
 #include <openenclave/internal/result.h>
 #include <openenclave/internal/sgxcreate.h>
 #include <openenclave/internal/sgxtypes.h>
+#include <openenclave/internal/switchless.h>
 #include <openenclave/internal/trace.h>
 #include <openenclave/internal/utils.h>
 #include <string.h>
@@ -793,6 +794,9 @@ oe_result_t oe_terminate_enclave(oe_enclave_t* enclave)
 
     /* Remove this enclave from the global list. */
     oe_remove_enclave_instance(enclave);
+
+    /* Shut down the switchless manager */
+    oe_stop_switchless_manager(enclave);
 
     /* Clear the magic number */
     enclave->magic = 0;

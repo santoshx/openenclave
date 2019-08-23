@@ -73,6 +73,7 @@ typedef enum _oe_func
 {
     OE_ECALL_DESTRUCTOR = OE_ECALL_BASE,
     OE_ECALL_INIT_ENCLAVE,
+    OE_ECALL_INIT_SWITCHLESS,
     OE_ECALL_CALL_ENCLAVE_FUNCTION,
     OE_ECALL_VIRTUAL_EXCEPTION_HANDLER,
     /* Caution: always add new ECALL function numbers here */

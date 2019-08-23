@@ -13,6 +13,15 @@
 **
 **==============================================================================
 */
+int oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg)
+{
+    return pthread_create(thread, NULL, func, arg);
+}
+
+int oe_thread_join(oe_thread thread)
+{
+    return pthread_join(thread, NULL);
+}
 
 oe_thread oe_thread_self(void)
 {

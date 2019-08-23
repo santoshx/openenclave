@@ -8,6 +8,7 @@
 #include <openenclave/corelibc/string.h>
 #include <openenclave/edger8r/enclave.h>
 #include <openenclave/enclave.h>
+#include <openenclave/internal/atomic.h>
 #include <openenclave/internal/calls.h>
 #include <openenclave/internal/fault.h>
 #include <openenclave/internal/globals.h>
@@ -22,6 +23,7 @@
 #include "../../sgx/report.h"
 #include "../atexit.h"
 #include "../shm.h"
+#include "../switchlesscalls.h"
 #include "asmdefs.h"
 #include "cpuid.h"
 #include "init.h"
@@ -422,6 +424,11 @@ static void _handle_ecall(
             arg_out = _handle_init_enclave(arg_in);
             break;
         }
+        case OE_ECALL_INIT_SWITCHLESS:
+        {
+            arg_out = _handle_init_switchless(arg_in);
+            break;
+        }
         default:
         {
             /* No function found with the number */
@@ -586,11 +593,18 @@ oe_result_t oe_call_host_function_by_table_id(
     args->result = OE_UNEXPECTED;
 
     /* Call the host function with this address */
-    // TODO: for switchessless calls, push the job (wrapped in args) to an
-    // available worker thread, and wait for result
-    // if (!switchless)
+    if (!switchless)
     {
         OE_CHECK(oe_ocall(OE_OCALL_CALL_HOST_FUNCTION, (uint64_t)args, NULL));
+    }
+    else
+    {
+        OE_CHECK(_oe_post_switchless_ocall(args));
+
+        while (args->result == __OE_RESULT_MAX)
+        {
+            // Wait until args.result is set by the dispatcher.
+        }
     }
 
     /* Check the result */
@@ -634,34 +648,6 @@ oe_result_t oe_call_host_function(
         output_buffer_size,
         output_bytes_written,
         false /* non-switchless */);
-}
-
-/*
-**==============================================================================
-**
-** oe_switchless_call_host_function()
-** This is the preferred way to call host functions switchlessly.
-**
-**==============================================================================
-*/
-
-oe_result_t oe_switchless_call_host_function(
-    size_t function_id,
-    const void* input_buffer,
-    size_t input_buffer_size,
-    void* output_buffer,
-    size_t output_buffer_size,
-    size_t* output_bytes_written)
-{
-    return oe_call_host_function_by_table_id(
-        OE_UINT64_MAX,
-        function_id,
-        input_buffer,
-        input_buffer_size,
-        output_buffer,
-        output_buffer_size,
-        output_bytes_written,
-        true /* switchless */);
 }
 
 /*

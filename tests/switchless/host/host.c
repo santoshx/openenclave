@@ -62,6 +62,8 @@ int main(int argc, const char* argv[])
              argv[1], OE_ENCLAVE_TYPE_SGX, flags, NULL, 0, &enclave)) != OE_OK)
         oe_put_err("oe_create_enclave(): result=%u", result);
 
+    oe_start_switchless_manager(enclave, 2);
+
     pthread_t threads[NUM_HOST_THREADS];
     for (int i = 0; i < NUM_HOST_THREADS; i++)
     {
