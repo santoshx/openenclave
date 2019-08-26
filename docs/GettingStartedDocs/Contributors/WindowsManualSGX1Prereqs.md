@@ -12,4 +12,6 @@ sc query aesmservice
 
 The state of the service should be "running" (4). Follow Intel's documentation for troubleshooting.
 
+TODO: Provide link for donwloading PSW 2.2
+
 Note that Open Enclave is only compatible with the Intel PSW 2.2.
