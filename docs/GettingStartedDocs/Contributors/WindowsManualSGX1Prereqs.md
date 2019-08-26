@@ -1,10 +1,6 @@
-SGX1 mode: Prereqs
-=========================================================================================
+# SGX1 mode: Prereqs
 
-## Intel Platform Software for Windows (PSW) v2.2
-
-Intel® SGX Platform Software for Windows (PSW)
----------------------------------
+## Intel SGX Platform Software for Windows (PSW) v2.2
 
 The PSW should be installed automatically on Windows 10 with the Fall Creators
 Update installed, or on a Windows Server 2016 image for an Azure Confidential

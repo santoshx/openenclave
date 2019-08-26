@@ -1,5 +1,5 @@
-Manually Installing Windows Prerequisites for OpenEnclave
-=========================================
+# Manually Installing Windows Prerequisites for OpenEnclave
+
 The following are prerequisites for building and running Open Enclave on
 Windows. These are required for both SGX1 mode and SGX1+FLC mode
 
@@ -14,16 +14,16 @@ Windows. These are required for both SGX1 mode and SGX1+FLC mode
 - If using SGX1 mode: [PSW 2.2 for SGX1 mode](WindowsManualSGX1Prereqs.md)
 - If using SGX1 + FLC mode: [PSW 2.4 with Intel's DCAP primitives](WindowsManualSGX1FLCDCAPPrereqs.md)
 
-Microsoft Visual Studio 2017
----------------------------------
+## Microsoft Visual Studio 2017
+
 Install [Microsoft Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/).
 Visual Studio 2017's CMake support (ver 3.12 or above) is required for building the Open Enclave SDK.
 Note cmake in Visual Studio 2019 is not fully supported yet.
 For more information about cmake support, refer to
 https://blogs.msdn.microsoft.com/vcblog/2016/10/05/cmake-support-in-visual-studio/
 
-Git for Windows 64-bit
----------------------------------
+## Git for Windows 64-bit
+
 Install Git and add Git's bash to the path.
 Typically, Git's bash is located in C:\Program Files\Git\bin.
 Currently the Open Enclave SDK build system uses bash scripts to configure
@@ -45,8 +45,8 @@ C:\>where openssl
 C:\Program Files\Git\mingw64\bin\openssl.exe
 ```
 
-Clang
----------------------------------
+## Clang
+
 Install Clang 7.0.1 and add the LLVM folder (typically C:\Program Files\LLVM\bin)
 to the path. Open Enclave SDK uses clang to build the enclave binaries.
 
@@ -60,8 +60,8 @@ C:\> where ld.lld
 C:\Program Files\LLVM\bin\ld.lld.exe
 ```
 
-OCaml
----------------------------------
+## OCaml
+
 Install [OCaml for Windows (64-bit)](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/).
 Please download and install the mingw64 exe for OCaml, for example, https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/ocpwin64-20160113-4.02.1+ocp1-mingw64.exe.
 
