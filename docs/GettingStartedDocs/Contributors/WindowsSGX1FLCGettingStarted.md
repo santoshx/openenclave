@@ -5,11 +5,12 @@
 - Windows client with windows 10 update august 2019 or Windows Server 2016
 - SGX1 capable system with Flexible Launch Control support. Most likely this will be an Intel Coffeelake system.
 
-##  Install Git and Clone the Open Enclave SDK repo
+## Install Git and Clone the Open Enclave SDK repo
 
 Download and install Git for Windows from [here](https://git-scm.com/download/win)
 
 Clone the Open Enclave SDK
+
 ```powershell
 cd c:\
 git clone https://github.com/openenclave/openenclave
@@ -20,6 +21,7 @@ This creates a source tree under the directory called openenclave.
 ## Install project prerequisites
 
 First, change directory into the openenclave repository:
+
 ```powershell
 cd openenclave
 ```
@@ -34,6 +36,7 @@ cd scripts
 ```
 
 As an example, if you cloned Open Enclave SDK repo into c:\openenclave, you would run the following
+
 ```powershell
 cd scripts
 .\install-windows-prereqs.ps1 -InstallPath c:\openenclave -WithFLC $true -WithAzureDCAPClient $true
@@ -86,10 +89,11 @@ A clean pass of the above unitests run is an indication that your Open Enclave s
 For more information refer to the [Advanced Test Info](AdvancedTestInfo.md) document.
 
 ## Packaging into Nuget Package
+
 Instructions coming soon
 
 ## Known Issues
 
-Samples have not yet been ported to Windows
+Samples have not yet been ported to Windows.
 
 Not all tests currently run on Windows. See tests/CMakeLists.txt for a list of supported tests.

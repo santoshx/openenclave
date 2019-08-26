@@ -15,6 +15,7 @@ Windows.
 Download and install Git for Windows from [here](https://git-scm.com/download/win)
 
 Clone the Open Enclave SDK
+
 ```powershell
 cd c:\
 git clone https://github.com/openenclave/openenclave
@@ -25,13 +26,12 @@ This creates a source tree under the directory called openenclave.
 ## Install project prerequisites
 
 First, change directory into the openenclave repository:
+
 ```powershell
 cd openenclave
 ```
 
 To deploy all the prerequisities for building Open Enclave including Intel's DCAP primitives and Azure's DCAP library, you can run the  following from powershell.
-
-```scripts/install-windows-prereqs.ps1```
 
 ```powershell
 cd scripts
@@ -39,6 +39,7 @@ cd scripts
 ```
 
 As an example, if you cloned Open Enclave SDK repo into c:\openenclave, you would run the following
+
 ```powershell
 cd scripts
 .\install-windows-prereqs.ps1 -InstallPath c:\openenclave -WithFLC $false
@@ -47,6 +48,7 @@ cd scripts
 If you prefer to manually install prerequisites, please refer to this [document](WindowsManualInstallPrereqs.md).
 
 ## Intel® SGX Platform Software for Windows (PSW)
+
 The PSW should be installed automatically on Windows 10 with the Fall Creators
 Update installed, or on a Windows Server 2016 image for an Azure Confidential
 Compute VM. You can verify that is the case on the command line as follows:
@@ -69,7 +71,7 @@ Normally this is accessible under the `Visual Studio 2017` folder in the Start M
 
 2. At the x64 Native Tools command prompt, use cmake and ninja to build the debug version:
 
-   ```
+   ```cmd
    cd C:\openenclave
    mkdir build\x64-Debug
    cd build\x64-Debug
@@ -78,8 +80,8 @@ Normally this is accessible under the `Visual Studio 2017` folder in the Start M
    ```
 
    Similarly, build the release version with:
-   
-    ```
+
+    ```cmd
    cd C:\openenclave
    mkdir build\x64-Release
    cd build\x64-Release
@@ -115,10 +117,11 @@ A clean pass of the above unitests run is an indication that your Open Enclave s
 For more information refer to the [Advanced Test Info](AdvancedTestInfo.md) document.
 
 ## Packaging into Nuget Package
+
 Instructions coming soon
 
 ## Known Issues
 
-Samples have not yet been ported to Windows
+Samples have not yet been ported to Windows.
 
 Not all tests currently run on Windows. See tests/CMakeLists.txt for a list of supported tests.

@@ -11,8 +11,10 @@ Windows. These are required for both SGX1 mode and SGX1+FLC mode
 - [Git for Windows 64-bit](https://git-scm.com/download/win)
 - [OCaml for Windows 64-bit](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/)
 - [Clang/LLVM for Windows 64-bit](http://releases.llvm.org/7.0.1/LLVM-7.0.1-win64.exe)
+
+## Prerequisistes specific to SGX Mode
 - If using SGX1 mode: [PSW 2.2 for SGX1 mode](WindowsManualSGX1Prereqs.md)
-- If using SGX1 + FLC mode: [PSW 2.4 with Intel's DCAP primitives](WindowsManualSGX1FLCDCAPPrereqs.md)
+- If using SGX1+FLC mode: [PSW 2.4 with Intel's DCAP primitives](WindowsManualSGX1FLCDCAPPrereqs.md)
 
 ## Microsoft Visual Studio 2017
 
