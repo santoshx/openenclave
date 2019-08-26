@@ -47,7 +47,9 @@ On Linux
   - [Setup Open Enclave SDK for Simulator mode](SimulatorGettingStarted.md)
 
 On Windows
- - [Set up Open Enclave SDK](/docs/GettingStartedDocs/GettingStarted.Windows.md)
+ - [Set up Open Enclave SDK for SGX1+FLCMode](WindowsSGX1FLCGettingStarted.md)
+ - [Set up Open Enclave SDK for SGX1 mode](WindowsSGX1GettingStarted.md)
+ - Simulator mode not supported on Windows
 
 ## Samples
 
