@@ -17,8 +17,7 @@
 static void* _switchless_ocall_worker(void* arg)
 {
     host_worker_thread_context* context = (host_worker_thread_context*)arg;
-    uint64_t backoff_timer = 1;
-    static uint64_t backoff_max_timer = 1000;
+
     while (!context->stopping)
     {
         if (context->call_arg != NULL)
@@ -26,18 +25,6 @@ static void* _switchless_ocall_worker(void* arg)
             oe_handle_call_host_function(
                 (uint64_t)context->call_arg, context->enclave);
             context->call_arg = NULL;
-
-            // Likely we'll get another call soon, so reset the backoff timer.
-            backoff_timer = 1;
-        }
-
-        // sleep between 1 and 1000 miniseconds
-        oe_handle_sleep(backoff_timer);
-        // Exponential back off
-        backoff_timer = backoff_timer << 1;
-        if (backoff_timer > backoff_max_timer)
-        {
-            backoff_timer = backoff_max_timer;
         }
     }
     return NULL;

@@ -9,12 +9,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../../../host/strings.h"
 #include "switchless_u.h"
 
 #define NUM_HOST_THREADS 16
 
-int host_echo(char* in, char* out, char* str1, char* str2, char str3[100])
+int host_echo_switchless(
+    char* in,
+    char* out,
+    char* str1,
+    char* str2,
+    char str3[100])
 {
     OE_TEST(strcmp(str1, "oe_host_strdup1") == 0);
     OE_TEST(strcmp(str2, "oe_host_strdup2") == 0);
@@ -25,24 +31,20 @@ int host_echo(char* in, char* out, char* str1, char* str2, char str3[100])
     return 0;
 }
 
-void* host_thread(void* arg)
+int host_echo_regular(
+    char* in,
+    char* out,
+    char* str1,
+    char* str2,
+    char str3[100])
 {
-    char out[100];
-    int return_val;
+    OE_TEST(strcmp(str1, "oe_host_strdup1") == 0);
+    OE_TEST(strcmp(str2, "oe_host_strdup2") == 0);
+    OE_TEST(strcmp(str3, "oe_host_strdup3") == 0);
 
-    oe_enclave_t* enclave = (oe_enclave_t*)arg;
-    oe_result_t result = enc_echo(enclave, &return_val, "Hello World", out);
+    strcpy(out, in);
 
-    if (result != OE_OK)
-        oe_put_err("oe_call_enclave() failed: result=%u", result);
-
-    if (return_val != 0)
-        oe_put_err("ECALL failed args.result=%d", return_val);
-
-    if (strcmp("Hello World", out) != 0)
-        oe_put_err("ecall failed: %s != %s\n", "Hello World", out);
-
-    return NULL;
+    return 0;
 }
 
 int main(int argc, const char* argv[])
@@ -64,26 +66,36 @@ int main(int argc, const char* argv[])
 
     oe_start_switchless_manager(enclave, 2);
 
-    pthread_t threads[NUM_HOST_THREADS];
-    for (int i = 0; i < NUM_HOST_THREADS; i++)
-    {
-        int ret = 0;
-        if ((ret = pthread_create(&threads[i], 0, host_thread, enclave)))
-        {
-            oe_put_err("pthread_create(host): ret=%u", ret);
-        }
-        else
-            printf("created thread %u\n", i);
-    }
+    char out[100];
+    int return_val;
 
-    for (int i = 0; i < NUM_HOST_THREADS; i++)
-    {
-        pthread_join(threads[i], NULL);
-    }
+    double switchless_microseconds = 0;
+    struct timespec start, end;
+
+    clock_gettime(CLOCK_REALTIME, &start);
+    OE_TEST(
+        enc_echo_switchless(enclave, &return_val, "Hello World", out) == OE_OK);
+    clock_gettime(CLOCK_REALTIME, &end);
+    switchless_microseconds += (end.tv_sec - start.tv_sec) * 1000000.0 +
+                               (end.tv_nsec - start.tv_nsec) / 1000.0;
+
+    double regular_microseconds = 0;
+    clock_gettime(CLOCK_REALTIME, &start);
+    OE_TEST(
+        enc_echo_regular(enclave, &return_val, "Hello World", out) == OE_OK);
+    clock_gettime(CLOCK_REALTIME, &end);
+    regular_microseconds += (end.tv_sec - start.tv_sec) * 1000000.0 +
+                            (end.tv_nsec - start.tv_nsec) / 1000.0;
 
     result = oe_terminate_enclave(enclave);
     OE_TEST(result == OE_OK);
 
+    printf(
+        "Time spent in repeating OCALL 1 million times: switchless %d vs "
+        "regular %d ms, speed up: %.2f\n",
+        (int)switchless_microseconds / 1000,
+        (int)regular_microseconds / 1000,
+        (double)regular_microseconds / switchless_microseconds);
     printf("=== passed all tests (switchless)\n");
 
     return 0;

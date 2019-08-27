@@ -167,7 +167,7 @@ void* oe_allocate_switchless_ocall_buffer(size_t size)
 void oe_free_switchless_ocall_buffer(void* buffer)
 {
     OE_UNUSED(buffer);
-    /* Do nothing. Buffer will be freed on ECALL RETURN */
+    oe_shm_clear();
 }
 
 int oe_host_write(int device, const char* str, size_t len)

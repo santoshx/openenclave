@@ -74,7 +74,6 @@ oe_result_t _oe_post_switchless_ocall(oe_call_host_function_args_t* args)
     }
 
     // Cycle through the worker contexts until we find a free worker.
-    // To minimize contention, we always start from the paired worker.
     for (int i = 0;; i = (i + 1) % (int)_num_host_workers)
     {
         if (_host_worker_contexts[i].call_arg == NULL)

@@ -18,7 +18,7 @@ char* oe_host_strdup(const char* str)
     return dup;
 }
 
-int enc_echo(char* in, char out[100])
+int enc_echo_switchless(char* in, char out[100])
 {
     oe_result_t result;
 
@@ -36,24 +36,72 @@ int enc_echo(char* in, char out[100])
     char stack_allocated_str[100] = "oe_host_strdup3";
     int return_val;
 
-    result = host_echo(
-        &return_val,
-        in,
-        out,
-        "oe_host_strdup1",
-        host_allocated_str,
-        stack_allocated_str);
-    if (result != OE_OK)
+    for (int i = 0; i < 1000000; i++)
+    {
+        result = host_echo_switchless(
+            &return_val,
+            in,
+            out,
+            "oe_host_strdup1",
+            host_allocated_str,
+            stack_allocated_str);
+        if (result != OE_OK)
+        {
+            return -1;
+        }
+
+        if (return_val != 0)
+        {
+            return -1;
+        }
+    }
+
+    oe_host_printf("Hello from switchless Echo function!\n");
+
+    oe_host_free(host_allocated_str);
+
+    return 0;
+}
+
+int enc_echo_regular(char* in, char out[100])
+{
+    oe_result_t result;
+
+    if (oe_strcmp(in, "Hello World") != 0)
     {
         return -1;
     }
 
-    if (return_val != 0)
+    char* host_allocated_str = oe_host_strdup("oe_host_strdup2");
+    if (host_allocated_str == NULL)
     {
         return -1;
     }
 
-    oe_host_printf("Hello from Echo function!\n");
+    char stack_allocated_str[100] = "oe_host_strdup3";
+    int return_val;
+
+    for (int i = 0; i < 1000000; i++)
+    {
+        result = host_echo_regular(
+            &return_val,
+            in,
+            out,
+            "oe_host_strdup1",
+            host_allocated_str,
+            stack_allocated_str);
+        if (result != OE_OK)
+        {
+            return -1;
+        }
+
+        if (return_val != 0)
+        {
+            return -1;
+        }
+    }
+
+    oe_host_printf("Hello from regular Echo function!\n");
 
     oe_host_free(host_allocated_str);
 

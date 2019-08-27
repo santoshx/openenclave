@@ -318,11 +318,14 @@ void oe_free_key(
     size_t key_info_size);
 
 /**
- * Start the switchless call manager for the enclave. This should be done
- * right after enclave creation for any enclave that has switchless ocalls.
+ * Switchless ECALL/OCALLs are alternate ways to call into the trusted world
+ * from the untrusted world or vice versa, without going through the regular
+ * execution privileage transitions. This routine starts the switchless call
+ * manager for the enclave. This should be done right after enclave creation
+ * for any enclave that has switchless calls.
  *
- * @param enclave The enclave handle.
- * @param num_host_workers The number of host worker threads that are
+ * @param[in] enclave The enclave handle.
+ * @param[in] num_host_workers The number of host worker threads that are
  * dedicated to servicing switchless ocalls.
  *
  * @retval OE_OK The switchless manager is successfully started.
