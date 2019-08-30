@@ -408,7 +408,7 @@ static oe_result_t _handle_ocall(
     switch ((oe_func_t)func)
     {
         case OE_OCALL_CALL_HOST_FUNCTION:
-            oe_handle_call_host_function(arg_in, enclave);
+            OE_CHECK(oe_handle_call_host_function(arg_in, enclave));
             break;
 
         case OE_OCALL_MALLOC:

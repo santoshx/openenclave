@@ -664,7 +664,12 @@ oe_result_t oe_create_enclave(
     if (!enclave_path || !enclave_out ||
         ((enclave_type != OE_ENCLAVE_TYPE_SGX) &&
          (enclave_type != OE_ENCLAVE_TYPE_AUTO)) ||
-        (flags & OE_ENCLAVE_FLAG_RESERVED) || config || config_size > 0)
+        (flags & OE_ENCLAVE_FLAG_RESERVED))
+        OE_RAISE(OE_INVALID_PARAMETER);
+
+    /* Only allow config and config_size when switchless flag is set */
+    if ((flags & OE_ENCLAVE_FLAG_CONTEXT_SWITCHLESS) == 0 &&
+        (config != NULL || config_size != 0))
         OE_RAISE(OE_INVALID_PARAMETER);
 
     /* Allocate and zero-fill the enclave structure */
@@ -752,6 +757,22 @@ oe_result_t oe_create_enclave(
 
     /* Invoke enclave initialization. */
     OE_CHECK(_initialize_enclave(enclave));
+
+    /* Initialization for switchless calls */
+    if (flags & OE_ENCLAVE_FLAG_CONTEXT_SWITCHLESS)
+    {
+        /* Default the number of host worker threads to the number of enclave
+           thread bindings */
+        size_t num_host_workers = enclave->num_bindings;
+        if (config != NULL)
+        {
+            if (config_size != sizeof(switchless_settings))
+                OE_RAISE(OE_INVALID_PARAMETER);
+
+            num_host_workers = ((switchless_settings*)config)->num_host_workers;
+        }
+        oe_start_switchless_manager(enclave, num_host_workers);
+    }
 
     /* Setup logging configuration */
     oe_log_enclave_init(enclave);

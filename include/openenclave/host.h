@@ -46,10 +46,22 @@ OE_EXTERNC_BEGIN
 #define OE_ENCLAVE_FLAG_SIMULATE 0x00000002u
 
 /**
+ *  Flag passed into oe_create_enclave to enable the enclave with switchless
+ *  calls. A switchless call is a function invocation from the trusted world to
+ *  the untrusted world, or vice versa, without context switches and transition
+ *  of the execution mode. Typically the caller posts the job to a shared
+ *  memory buffer accessible by both the trusted world and the untrusted world,
+ *  and a workers in the other world takes the job and posts the result, which
+ *  is retrieved by the caller.
+ */
+#define OE_ENCLAVE_FLAG_CONTEXT_SWITCHLESS 0x00000004u
+
+/**
  * @cond DEV
  */
-#define OE_ENCLAVE_FLAG_RESERVED \
-    (~(OE_ENCLAVE_FLAG_DEBUG | OE_ENCLAVE_FLAG_SIMULATE))
+#define OE_ENCLAVE_FLAG_RESERVED                          \
+    (~(OE_ENCLAVE_FLAG_DEBUG | OE_ENCLAVE_FLAG_SIMULATE | \
+       OE_ENCLAVE_FLAG_CONTEXT_SWITCHLESS))
 /**
  * @endcond
  */
@@ -84,7 +96,7 @@ typedef void (*oe_ocall_func_t)(
  *                               DO NOT SHIP CODE with this flag
  *
  * @param config Additional enclave creation configuration data for the specific
- * enclave type. This parameter is reserved and must be NULL.
+ * enclave type.
  *
  * @param config_size The size of the **config** data buffer in bytes.
  *
@@ -316,27 +328,6 @@ void oe_free_key(
     size_t key_buffer_size,
     uint8_t* key_info,
     size_t key_info_size);
-
-/**
- * Switchless ECALL/OCALLs are alternate ways to call into the trusted world
- * from the untrusted world or vice versa, without going through the regular
- * execution privileage transitions. This routine starts the switchless call
- * manager for the enclave. This should be done right after enclave creation
- * for any enclave that has switchless calls.
- *
- * @param[in] enclave The enclave handle.
- * @param[in] num_host_workers The number of host worker threads that are
- * dedicated to servicing switchless ocalls.
- *
- * @retval OE_OK The switchless manager is successfully started.
- * @retval OE_UNEXPECTED Something unexpected happened, e.g. the switchless
- * manager is already started.
- * @retval OE_INVALID_PARAMETER The enclave or num_host_workers is not valid.
- * @retval OE_FAILURE The worker threads are not created properly.
- */
-oe_result_t oe_start_switchless_manager(
-    oe_enclave_t* enclave,
-    uint32_t num_host_workers);
 
 OE_EXTERNC_END
 

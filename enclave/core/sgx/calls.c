@@ -426,7 +426,7 @@ static void _handle_ecall(
         }
         case OE_ECALL_INIT_SWITCHLESS:
         {
-            arg_out = _handle_init_switchless(arg_in);
+            arg_out = oe_handle_init_switchless(arg_in);
             break;
         }
         default:
@@ -593,18 +593,28 @@ oe_result_t oe_call_host_function_by_table_id(
     args->result = OE_UNEXPECTED;
 
     /* Call the host function with this address */
-    if (!switchless)
+    if (switchless && oe_is_switchless_initialized())
     {
-        OE_CHECK(oe_ocall(OE_OCALL_CALL_HOST_FUNCTION, (uint64_t)args, NULL));
+        oe_result_t post_result = oe_post_switchless_ocall(args);
+
+        // Fall back to regular OCALL if host worker threads are unavailable
+        if (post_result == OE_SWITCHLESS_OCALL_MISSED)
+            OE_CHECK(
+                oe_ocall(OE_OCALL_CALL_HOST_FUNCTION, (uint64_t)args, NULL));
+        else
+        {
+            OE_CHECK(post_result);
+            // Wait until args.result is set by the host worker.
+            while (args->result == __OE_RESULT_MAX)
+            {
+                /* Yield to CPU */
+                asm volatile("pause");
+            }
+        }
     }
     else
     {
-        OE_CHECK(_oe_post_switchless_ocall(args));
-
-        while (args->result == __OE_RESULT_MAX)
-        {
-            // Wait until args.result is set by the dispatcher.
-        }
+        OE_CHECK(oe_ocall(OE_OCALL_CALL_HOST_FUNCTION, (uint64_t)args, NULL));
     }
 
     /* Check the result */

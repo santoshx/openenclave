@@ -13,25 +13,26 @@
 **==============================================================================
 */
 
-int oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg)
+oe_result_t oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg)
 {
-    *thread = CreateThread(NULL, 0, func, arg, 0, NULL);
-    return *thread == NULL;
+    DWORD (*start_routine)(void*) = (DWORD(*)(void*))func;
+    *thread = CreateThread(NULL, 0, start_routine, arg, 0, NULL);
+    return *thread == NULL ? OE_THREAD_CREATE_ERROR : OE_OK;
 }
 
-int oe_thread_join(oe_thread thread)
+oe_result_t oe_thread_join(oe_thread thread)
 {
     if (WaitForSingleObject(thread, INFINITE) == WAIT_OBJECT_0)
     {
         CloseHandle(thread);
-        return 0;
+        return OE_OK;
     }
-    return 1;
+    return OE_THREAD_JOIN_ERROR;
 }
 
 oe_thread oe_thread_self(void)
 {
-    return GetCurrentThreadId();
+    return (oe_thread)(UINT_PTR)GetCurrentThreadId();
 }
 
 int oe_thread_equal(oe_thread thread1, oe_thread thread2)

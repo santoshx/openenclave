@@ -7,21 +7,35 @@
 #include <openenclave/internal/raise.h>
 
 // The number of host thread workers. Initialized by host through ECALL
-size_t _num_host_workers = 0;
+static size_t _num_host_workers = 0;
 
 // The array of host worker contexts. Initialized by host through ECALL
-host_worker_thread_context* _host_worker_contexts;
+static host_worker_thread_context* _host_worker_contexts;
 
 /*
 **==============================================================================
 **
-** _handle_init_switchless()
+** oe_is_switchless_initialized
+**
+** Return whether oe_handle_init_switchless has been called or not.
+**
+**==============================================================================
+*/
+bool oe_is_switchless_initialized()
+{
+    return _num_host_workers != 0;
+}
+
+/*
+**==============================================================================
+**
+** oe_handle_init_switchless()
 **
 ** Handle the OE_ECALL_INIT_SWITCHLESS from host.
 **
 **==============================================================================
 */
-oe_result_t _handle_init_switchless(uint64_t arg_in)
+oe_result_t oe_handle_init_switchless(uint64_t arg_in)
 {
     oe_result_t result = OE_OK;
 
@@ -29,21 +43,25 @@ oe_result_t _handle_init_switchless(uint64_t arg_in)
         OE_RAISE(OE_INVALID_PARAMETER);
 
     oe_switchless_call_manager* manager = (oe_switchless_call_manager*)arg_in;
+    oe_switchless_call_manager safe_manager = *manager;
+
     size_t contexts_size =
-        sizeof(host_worker_thread_context) * manager->num_host_workers;
-    size_t threads_size = sizeof(oe_thread_t) * manager->num_host_workers;
+        sizeof(host_worker_thread_context) * safe_manager.num_host_workers;
+    size_t threads_size = sizeof(oe_thread_t) * safe_manager.num_host_workers;
 
     // Ensure the switchless manager and its arrays are outside of enclave
-    if (!oe_is_outside_enclave(manager, sizeof(oe_switchless_call_manager)) ||
-        !oe_is_outside_enclave(manager->host_worker_contexts, contexts_size) ||
-        !oe_is_outside_enclave(manager->host_worker_threads, threads_size))
+    if (safe_manager.num_host_workers == 0 ||
+        !oe_is_outside_enclave(manager, sizeof(oe_switchless_call_manager)) ||
+        !oe_is_outside_enclave(
+            safe_manager.host_worker_contexts, contexts_size) ||
+        !oe_is_outside_enclave(safe_manager.host_worker_threads, threads_size))
     {
         OE_RAISE(OE_INVALID_PARAMETER);
     }
 
     // Copy the worker context array pointer and its size to avoid TOCTOU
-    _num_host_workers = manager->num_host_workers;
-    _host_worker_contexts = manager->host_worker_contexts;
+    _num_host_workers = safe_manager.num_host_workers;
+    _host_worker_contexts = safe_manager.host_worker_contexts;
 
 done:
     return result;
@@ -52,44 +70,36 @@ done:
 /*
 **==============================================================================
 **
-** _oe_post_switchless_ocall()
+** oe_post_switchless_ocall()
 **
 **  Post the function call (wrapped in args) to a free host worker thread
 **  by writing to its context.
 **
 **==============================================================================
 */
-oe_result_t _oe_post_switchless_ocall(oe_call_host_function_args_t* args)
+oe_result_t oe_post_switchless_ocall(oe_call_host_function_args_t* args)
 {
     oe_result_t result = OE_UNEXPECTED;
     args->result = __OE_RESULT_MAX; // Means the call hasn't been processed.
 
-    if (_num_host_workers == 0)
-    {
-        OE_RAISE_MSG(
-            OE_SWITCHLESS_NOT_INITIALIZED,
-            "Switchless manager is not"
-            " initialized. Did you forget to call "
-            "oe_start_switchless_manager?");
-    }
-
     // Cycle through the worker contexts until we find a free worker.
-    for (int i = 0;; i = (i + 1) % (int)_num_host_workers)
+    size_t tries = _num_host_workers;
+    while (tries--)
     {
-        if (_host_worker_contexts[i].call_arg == NULL)
+        if (_host_worker_contexts[tries].call_arg == NULL)
         {
-            if (oe_atomic_cas_ptr(
-                    (void* volatile*)&_host_worker_contexts[i].call_arg,
+            if (oe_atomic_compare_and_swap_ptr(
+                    (void* volatile*)&_host_worker_contexts[tries].call_arg,
                     NULL,
                     args))
             {
-                result = OE_OK;
-                break;
+                return OE_OK;
             }
         }
     }
 
-done:
+    result = OE_SWITCHLESS_OCALL_MISSED;
+
     return result;
 }
 
@@ -97,7 +107,6 @@ done:
 **==============================================================================
 **
 ** oe_switchless_call_host_function()
-** This is the preferred way to call host functions switchlessly.
 **
 **==============================================================================
 */

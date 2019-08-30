@@ -18,7 +18,7 @@ static void* _switchless_ocall_worker(void* arg)
 {
     host_worker_thread_context* context = (host_worker_thread_context*)arg;
 
-    while (!context->stopping)
+    while (!context->is_stopping)
     {
         if (context->call_arg != NULL)
         {
@@ -34,36 +34,28 @@ static void oe_stop_worker_threads(oe_switchless_call_manager* manager)
 {
     for (size_t i = 0; i < manager->num_host_workers; i++)
     {
-        manager->host_worker_contexts[i].stopping = true;
+        manager->host_worker_contexts[i].is_stopping = true;
     }
 
     for (size_t i = 0; i < manager->num_host_workers; i++)
     {
-        if (manager->host_worker_threads[i] != 0)
+        if (manager->host_worker_threads[i] != (oe_thread_t)NULL)
             oe_thread_join(manager->host_worker_threads[i]);
     }
 }
 
 oe_result_t oe_start_switchless_manager(
     oe_enclave_t* enclave,
-    uint32_t num_host_workers)
+    size_t num_host_workers)
 {
     oe_result_t result = OE_UNEXPECTED;
     uint64_t result_out = 0;
 
-    if (num_host_workers < 1)
-        OE_RAISE_MSG(
-            OE_INVALID_PARAMETER,
-            "We should have at least one host worker thread");
+    if (num_host_workers < 1 || enclave == NULL)
+        OE_RAISE(OE_INVALID_PARAMETER);
 
-    if (enclave == NULL)
-        OE_RAISE_MSG(
-            OE_INVALID_PARAMETER, "The enclave is not created properly");
-
-    // Switchless manager can only be started once.
     if (enclave->switchless_manager != NULL)
-        OE_RAISE_MSG(
-            OE_UNEXPECTED, "Switchless manager is already initialized");
+        OE_RAISE(OE_UNEXPECTED);
 
     // Limit the number of host workers to the number of thread bindings
     // because the maximum parallelism is dictated by the latter for
@@ -75,11 +67,17 @@ oe_result_t oe_start_switchless_manager(
     // Allocate memory for the manager and its arrays
     oe_switchless_call_manager* manager =
         calloc(1, sizeof(oe_switchless_call_manager));
+    if (manager == NULL)
+        OE_RAISE(OE_OUT_OF_MEMORY);
 
     host_worker_thread_context* contexts =
         calloc(num_host_workers, sizeof(host_worker_thread_context));
+    if (contexts == NULL)
+        OE_RAISE(OE_OUT_OF_MEMORY);
 
     oe_thread_t* threads = calloc(num_host_workers, sizeof(oe_thread_t));
+    if (threads == NULL)
+        OE_RAISE(OE_OUT_OF_MEMORY);
 
     manager->num_host_workers = num_host_workers;
     manager->host_worker_contexts = contexts;
@@ -95,7 +93,7 @@ oe_result_t oe_start_switchless_manager(
                 &manager->host_worker_contexts[i]) != 0)
         {
             oe_stop_worker_threads(manager);
-            OE_RAISE(OE_FAILURE);
+            OE_RAISE(OE_THREAD_CREATE_ERROR);
         }
     }
 
@@ -115,7 +113,7 @@ done:
 
 void oe_stop_switchless_manager(oe_enclave_t* enclave)
 {
-    if (enclave->switchless_manager != NULL)
+    if (enclave != NULL && enclave->switchless_manager != NULL)
     {
         oe_stop_worker_threads(enclave->switchless_manager);
     }

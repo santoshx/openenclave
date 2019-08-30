@@ -465,6 +465,7 @@ TEE_Result TA_InvokeCommandEntryPoint(
         case OE_ECALL_INIT_SWITCHLESS:
         {
             /* TODO: initialize switchless calls */
+            result = TEE_ERROR_NOT_IMPLEMENTED;
             break;
         }
         default:

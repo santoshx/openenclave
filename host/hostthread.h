@@ -11,6 +11,7 @@
 #define _HOSTTHREAD_H
 
 #include <openenclave/bits/defs.h>
+#include <openenclave/bits/result.h>
 #include <openenclave/bits/types.h>
 
 #if __GNUC__
@@ -40,7 +41,7 @@ typedef pthread_key_t oe_thread_key;
 typedef INIT_ONCE oe_once_type;
 #define OE_H_ONCE_INITIALIZER INIT_ONCE_STATIC_INIT
 
-typedef DWORD oe_thread;
+typedef HANDLE oe_thread;
 
 typedef HANDLE oe_mutex;
 #define OE_H_MUTEX_INITIALIZER INVALID_HANDLE_VALUE
@@ -57,7 +58,10 @@ typedef DWORD oe_thread_key;
  *
  * @returns Returns zero on success.
  */
-int oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg);
+oe_result_t oe_thread_create(
+    oe_thread* thread,
+    void* (*func)(void*),
+    void* arg);
 
 /**
  * Join a platform-specific thread.
@@ -66,7 +70,7 @@ int oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg);
  *
  * @returns Returns zero on success.
  */
-int oe_thread_join(oe_thread thread);
+oe_result_t oe_thread_join(oe_thread thread);
 
 /**
  * Returns the identifier of the current thread.

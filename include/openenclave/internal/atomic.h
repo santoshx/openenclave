@@ -43,7 +43,10 @@ OE_INLINE uint64_t oe_atomic_decrement(volatile uint64_t* x)
 }
 
 OE_INLINE
-bool oe_atomic_cas(int64_t volatile* dest, int64_t old, int64_t newval)
+bool oe_atomic_compare_and_swap(
+    int64_t volatile* dest,
+    int64_t old,
+    int64_t newval)
 {
 #if defined(__GNUC__)
     return __sync_bool_compare_and_swap(dest, old, newval);
@@ -55,7 +58,10 @@ bool oe_atomic_cas(int64_t volatile* dest, int64_t old, int64_t newval)
 }
 
 OE_INLINE
-bool oe_atomic_cas_ptr(void* volatile* dest, void* old, void* newptr)
+bool oe_atomic_compare_and_swap_ptr(
+    void* volatile* dest,
+    void* old,
+    void* newptr)
 {
 #if defined(__GNUC__)
     return __sync_bool_compare_and_swap(dest, old, newptr);
