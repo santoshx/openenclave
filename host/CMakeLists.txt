@@ -84,6 +84,17 @@ if (UNIX)
     linux/time.c
     linux/windows.c)
 elseif (WIN32)
+  set(PLATFORM_HOST_ONLY_SRC
+    ../common/cert.c
+    crypto/bcrypt/cert.c
+    crypto/bcrypt/crl.c
+    crypto/bcrypt/ec.c
+    crypto/bcrypt/key.c
+    crypto/bcrypt/rsa.c
+    crypto/bcrypt/sha.c
+    crypto/bcrypt/pem.c
+    windows/hostthread.c)
+
   set(PLATFORM_SDK_ONLY_SRC
     ../3rdparty/mbedtls/mbedtls/library/bignum.c
     ../common/asn1.c
@@ -153,13 +164,15 @@ if (OE_SGX)
       sgx/linux/sgxioctl.c
       sgx/linux/xstate.c)
   else()
+    list(APPEND PLATFORM_HOST_ONLY_SRC
+      sgx/windows/sgxquoteproviderloader.c)
+
     list(APPEND PLATFORM_SDK_ONLY_SRC
       sgx/windows/aep.asm
       sgx/windows/aesm.c
       sgx/windows/enter.asm
       sgx/windows/entersim.asm
       sgx/windows/exception.c
-      sgx/windows/sgxquoteproviderloader.c
       sgx/windows/xstate.c)
   endif()
 
@@ -189,6 +202,8 @@ list(APPEND PLATFORM_HOST_ONLY_SRC
   ../common/datetime.c
   ../common/safecrt.c
   hexdump.c
+  dupenv.c
+  tests.c
   result.c
   traceh.c)
 
@@ -200,7 +215,6 @@ list(APPEND PLATFORM_SDK_ONLY_SRC
   asym_keys.c
   calls.c
   ocalls.c
-  dupenv.c
   error.c
   files.c
   fopen.c
@@ -209,7 +223,6 @@ list(APPEND PLATFORM_SDK_ONLY_SRC
   signkey.c
   strings.c
   tee_u_wrapper.c
-  tests.c
   traceh_enclave.c)
 
 # Combine the following common code along with the platform specific code and
@@ -241,30 +254,34 @@ endif()
 # TODO: Replace these with `find_package` and add as dependencies to
 # the CMake package.
 if (UNIX)
-  find_library(CRYPTO_LIB NAMES crypto)
-  if (NOT CRYPTO_LIB)
-    message(FATAL_ERROR "-- Looking for crypto library - not found")
-  else ()
-    message("-- Looking for crypto library - found")
-    add_library(crypto SHARED IMPORTED)
-    set_target_properties(crypto PROPERTIES IMPORTED_LOCATION ${CRYPTO_LIB})
+  if (NOT TARGET crypto)
+    find_library(CRYPTO_LIB NAMES crypto)
+    if (NOT CRYPTO_LIB)
+      message(FATAL_ERROR "-- Looking for crypto library - not found")
+    else ()
+      message("-- Looking for crypto library - found")
+      add_library(crypto SHARED IMPORTED)
+      set_target_properties(crypto PROPERTIES IMPORTED_LOCATION ${CRYPTO_LIB})
+    endif ()
   endif ()
 
-  find_library(DL_LIB NAMES dl)
-  if(NOT DL_LIB)
-    message(FATAL_ERROR "-- Looking for dl library - not found")
-  else ()
-    message("-- Looking for dl library - found")
-    add_library(dl SHARED IMPORTED)
-    set_target_properties(dl PROPERTIES IMPORTED_LOCATION ${DL_LIB})
+  if (NOT TARGET dlib)
+    find_library(DL_LIB NAMES dl)
+    if (NOT DL_LIB)
+      message(FATAL_ERROR "-- Looking for dl library - not found")
+    else ()
+      message("-- Looking for dl library - found")
+      add_library(dl SHARED IMPORTED)
+      set_target_properties(dl PROPERTIES IMPORTED_LOCATION ${DL_LIB})
+    endif ()
   endif ()
 endif ()
 
 find_package(Threads REQUIRED)
 
 if (UNIX)
-  target_link_libraries(oehostverify PRIVATE crypto dl Threads::Threads)
   target_link_libraries(oehost PRIVATE crypto dl Threads::Threads)
+  target_link_libraries(oehostverify PRIVATE crypto dl Threads::Threads)
 
   if (OE_TRUSTZONE)
     target_include_directories(oehost PRIVATE
@@ -275,6 +292,9 @@ elseif (WIN32)
   target_include_directories(oehost PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
   target_link_libraries(oehost PRIVATE bcrypt Crypt32)
+  target_include_directories(oehostverify PRIVATE
+    ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
+  target_link_libraries(oehostverify PRIVATE bcrypt Crypt32)
 
   # TODO: Handle TrustZone on Windows.
 endif ()
