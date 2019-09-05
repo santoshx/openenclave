@@ -7,27 +7,21 @@
 #include <openenclave/bits/defs.h>
 #include <openenclave/bits/types.h>
 #include <openenclave/internal/calls.h>
-
-typedef uint64_t oe_thread_t;
-
-typedef struct _switchless_settings
-{
-    size_t num_host_workers;
-} switchless_settings;
+#include <openenclave/internal/thread.h>
 
 typedef struct _host_worker_thread_context
 {
     volatile oe_call_host_function_args_t* call_arg;
     bool is_stopping;
     oe_enclave_t* enclave;
-} host_worker_thread_context;
+} host_worker_thread_context_t;
 
 typedef struct _oe_switchless_call_manager
 {
-    host_worker_thread_context* host_worker_contexts;
+    host_worker_thread_context_t* host_worker_contexts;
     oe_thread_t* host_worker_threads;
     size_t num_host_workers;
-} oe_switchless_call_manager;
+} oe_switchless_call_manager_t;
 
 oe_result_t oe_start_switchless_manager(
     oe_enclave_t* enclave,

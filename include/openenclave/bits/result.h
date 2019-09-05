@@ -317,7 +317,7 @@ typedef enum _oe_result
     /**
      * Failed to post a switchless call to host workers
      */
-    OE_SWITCHLESS_OCALL_MISSED,
+    OE_CONTEXT_SWITCHLESS_OCALL_MISSED,
 
     /**
      * Thread creation failed.

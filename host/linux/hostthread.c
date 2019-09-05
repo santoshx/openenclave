@@ -13,24 +13,22 @@
 **
 **==============================================================================
 */
-oe_result_t oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg)
+int oe_thread_create(oe_thread_t* thread, void* (*func)(void*), void* arg)
 {
-    return pthread_create(thread, NULL, func, arg) == 0
-               ? OE_OK
-               : OE_THREAD_CREATE_ERROR;
+    return pthread_create(thread, NULL, func, arg);
 }
 
-oe_result_t oe_thread_join(oe_thread thread)
+int oe_thread_join(oe_thread_t thread)
 {
-    return pthread_join(thread, NULL) == 0 ? OE_OK : OE_THREAD_JOIN_ERROR;
+    return pthread_join(thread, NULL);
 }
 
-oe_thread oe_thread_self(void)
+oe_thread_t oe_thread_self(void)
 {
     return pthread_self();
 }
 
-int oe_thread_equal(oe_thread thread1, oe_thread thread2)
+int oe_thread_equal(oe_thread_t thread1, oe_thread_t thread2)
 {
     return pthread_equal(thread1, thread2);
 }

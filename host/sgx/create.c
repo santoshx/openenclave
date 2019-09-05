@@ -402,6 +402,37 @@ done:
     return result;
 }
 
+/*
+** _config_enclave()
+**
+** Config the enclave with a list of configurations.
+*/
+static oe_result_t _configure_enclave(
+    oe_enclave_t* enclave,
+    const oe_config_t* configs)
+{
+    oe_result_t result = OE_UNEXPECTED;
+    const oe_config_t* config = NULL;
+
+    for (config = configs; config != NULL; config = config->next)
+    {
+        // Configure the switchless calls, such as the number of workers.
+        if (config->type == OE_CONFIG_TYPE_SWITCHLESS)
+        {
+            if (config->size != sizeof(oe_config_switchless_t))
+                OE_RAISE(OE_INVALID_PARAMETER);
+
+            size_t num_host_workers =
+                ((oe_config_switchless_t*)config)->num_host_workers;
+            oe_start_switchless_manager(enclave, num_host_workers);
+        }
+    }
+    result = OE_OK;
+
+done:
+    return result;
+}
+
 oe_result_t oe_sgx_validate_enclave_properties(
     const oe_sgx_enclave_properties_t* properties,
     const char** field_name)
@@ -645,8 +676,8 @@ oe_result_t oe_create_enclave(
     const char* enclave_path,
     oe_enclave_type_t enclave_type,
     uint32_t flags,
-    const void* config,
-    uint32_t config_size,
+    const oe_config_t* configs,
+    uint32_t config_count,
     const oe_ocall_func_t* ocall_table,
     uint32_t ocall_table_size,
     oe_enclave_t** enclave_out)
@@ -664,12 +695,9 @@ oe_result_t oe_create_enclave(
     if (!enclave_path || !enclave_out ||
         ((enclave_type != OE_ENCLAVE_TYPE_SGX) &&
          (enclave_type != OE_ENCLAVE_TYPE_AUTO)) ||
+        (config_count > 0 && configs == NULL) ||
+        (config_count == 0 && configs != NULL) ||
         (flags & OE_ENCLAVE_FLAG_RESERVED))
-        OE_RAISE(OE_INVALID_PARAMETER);
-
-    /* Only allow config and config_size when switchless flag is set */
-    if ((flags & OE_ENCLAVE_FLAG_CONTEXT_SWITCHLESS) == 0 &&
-        (config != NULL || config_size != 0))
         OE_RAISE(OE_INVALID_PARAMETER);
 
     /* Allocate and zero-fill the enclave structure */
@@ -758,21 +786,8 @@ oe_result_t oe_create_enclave(
     /* Invoke enclave initialization. */
     OE_CHECK(_initialize_enclave(enclave));
 
-    /* Initialization for switchless calls */
-    if (flags & OE_ENCLAVE_FLAG_CONTEXT_SWITCHLESS)
-    {
-        /* Default the number of host worker threads to the number of enclave
-           thread bindings */
-        size_t num_host_workers = enclave->num_bindings;
-        if (config != NULL)
-        {
-            if (config_size != sizeof(switchless_settings))
-                OE_RAISE(OE_INVALID_PARAMETER);
-
-            num_host_workers = ((switchless_settings*)config)->num_host_workers;
-        }
-        oe_start_switchless_manager(enclave, num_host_workers);
-    }
+    /* Apply the list of configurations to the enclave */
+    OE_CHECK(_configure_enclave(enclave, configs));
 
     /* Setup logging configuration */
     oe_log_enclave_init(enclave);

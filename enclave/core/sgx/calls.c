@@ -598,7 +598,7 @@ oe_result_t oe_call_host_function_by_table_id(
         oe_result_t post_result = oe_post_switchless_ocall(args);
 
         // Fall back to regular OCALL if host worker threads are unavailable
-        if (post_result == OE_SWITCHLESS_OCALL_MISSED)
+        if (post_result == OE_CONTEXT_SWITCHLESS_OCALL_MISSED)
             OE_CHECK(
                 oe_ocall(OE_OCALL_CALL_HOST_FUNCTION, (uint64_t)args, NULL));
         else

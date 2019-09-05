@@ -57,7 +57,7 @@ typedef struct _thread_binding
     uint64_t tcs;
 
     /* The thread this slot is assigned to */
-    oe_thread thread;
+    oe_thread_t thread;
 
     /* Flags */
     uint64_t flags;
@@ -127,7 +127,7 @@ struct _oe_enclave
     oe_debug_enclave_t* debug_enclave;
 
     /* Manager for switchless calls */
-    oe_switchless_call_manager* switchless_manager;
+    oe_switchless_call_manager_t* switchless_manager;
 };
 
 // Static asserts for consistency with

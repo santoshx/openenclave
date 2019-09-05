@@ -3,7 +3,10 @@
 
 #include "../hostthread.h"
 #include <assert.h>
+#include <openenclave/corelibc/errno.h>
 #include <openenclave/host.h>
+
+typedef DWORD (*start_routine_t)(void*);
 
 /*
 **==============================================================================
@@ -13,29 +16,30 @@
 **==============================================================================
 */
 
-oe_result_t oe_thread_create(oe_thread* thread, void* (*func)(void*), void* arg)
+int oe_thread_create(oe_thread_t* thread, void* (*func)(void*), void* arg)
 {
-    DWORD (*start_routine)(void*) = (DWORD(*)(void*))func;
-    *thread = CreateThread(NULL, 0, start_routine, arg, 0, NULL);
-    return *thread == NULL ? OE_THREAD_CREATE_ERROR : OE_OK;
+    start_routine_t start_routine = (start_routine_t)func;
+    *thread = (oe_thread_t)CreateThread(NULL, 0, start_routine, arg, 0, NULL);
+    return *thread == (oe_thread_t)NULL ? OE_EINVAL : 0;
 }
 
-oe_result_t oe_thread_join(oe_thread thread)
+int oe_thread_join(oe_thread_t thread)
 {
-    if (WaitForSingleObject(thread, INFINITE) == WAIT_OBJECT_0)
+    HANDLE handle = (HANDLE)thread;
+    if (WaitForSingleObject(handle, INFINITE) == WAIT_OBJECT_0)
     {
-        CloseHandle(thread);
-        return OE_OK;
+        CloseHandle(handle);
+        return 0;
     }
-    return OE_THREAD_JOIN_ERROR;
+    return OE_EINVAL;
 }
 
-oe_thread oe_thread_self(void)
+oe_thread_t oe_thread_self(void)
 {
-    return (oe_thread)(UINT_PTR)GetCurrentThreadId();
+    return (oe_thread_t)GetCurrentThreadId();
 }
 
-int oe_thread_equal(oe_thread thread1, oe_thread thread2)
+int oe_thread_equal(oe_thread_t thread1, oe_thread_t thread2)
 {
     return thread1 == thread2;
 }

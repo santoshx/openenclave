@@ -10,7 +10,7 @@
 static size_t _num_host_workers = 0;
 
 // The array of host worker contexts. Initialized by host through ECALL
-static host_worker_thread_context* _host_worker_contexts;
+static host_worker_thread_context_t* _host_worker_contexts;
 
 /*
 **==============================================================================
@@ -42,16 +42,17 @@ oe_result_t oe_handle_init_switchless(uint64_t arg_in)
     if (arg_in == 0)
         OE_RAISE(OE_INVALID_PARAMETER);
 
-    oe_switchless_call_manager* manager = (oe_switchless_call_manager*)arg_in;
-    oe_switchless_call_manager safe_manager = *manager;
+    oe_switchless_call_manager_t* manager =
+        (oe_switchless_call_manager_t*)arg_in;
+    oe_switchless_call_manager_t safe_manager = *manager;
 
     size_t contexts_size =
-        sizeof(host_worker_thread_context) * safe_manager.num_host_workers;
+        sizeof(host_worker_thread_context_t) * safe_manager.num_host_workers;
     size_t threads_size = sizeof(oe_thread_t) * safe_manager.num_host_workers;
 
     // Ensure the switchless manager and its arrays are outside of enclave
     if (safe_manager.num_host_workers == 0 ||
-        !oe_is_outside_enclave(manager, sizeof(oe_switchless_call_manager)) ||
+        !oe_is_outside_enclave(manager, sizeof(oe_switchless_call_manager_t)) ||
         !oe_is_outside_enclave(
             safe_manager.host_worker_contexts, contexts_size) ||
         !oe_is_outside_enclave(safe_manager.host_worker_threads, threads_size))
@@ -98,7 +99,7 @@ oe_result_t oe_post_switchless_ocall(oe_call_host_function_args_t* args)
         }
     }
 
-    result = OE_SWITCHLESS_OCALL_MISSED;
+    result = OE_CONTEXT_SWITCHLESS_OCALL_MISSED;
 
     return result;
 }

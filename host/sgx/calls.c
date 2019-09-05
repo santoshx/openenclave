@@ -567,7 +567,7 @@ static void* _assign_tcs(oe_enclave_t* enclave)
 {
     void* tcs = NULL;
     size_t i;
-    oe_thread thread = oe_thread_self();
+    oe_thread_t thread = oe_thread_self();
 
     oe_mutex_lock(&enclave->lock);
     {

@@ -4,7 +4,6 @@
 #include <limits.h>
 #include <openenclave/host.h>
 #include <openenclave/internal/error.h>
-#include <openenclave/internal/switchless.h>
 #include <openenclave/internal/tests.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -49,16 +48,16 @@ int main(int argc, const char* argv[])
     }
 
     // Enable switchless and configure host worker number
-    const uint32_t flags =
-        oe_get_create_flags() | OE_ENCLAVE_FLAG_CONTEXT_SWITCHLESS;
-    switchless_settings settings = {2};
+    const uint32_t flags = oe_get_create_flags();
+    oe_config_switchless_t config = {
+        {OE_CONFIG_TYPE_SWITCHLESS, sizeof(oe_config_switchless_t), NULL}, 2};
 
     if ((result = oe_create_switchless_enclave(
              argv[1],
              OE_ENCLAVE_TYPE_SGX,
              flags,
-             &settings,
-             sizeof(switchless_settings),
+             (oe_config_t*)&config,
+             1,
              &enclave)) != OE_OK)
         oe_put_err("oe_create_enclave(): result=%u", result);
 
@@ -68,7 +67,8 @@ int main(int argc, const char* argv[])
     double switchless_microseconds = 0;
     struct timespec start, end;
 
-    int repeats = 1000000;
+    // Increase this number to have a meaningful performance measurement
+    int repeats = 1;
 
     clock_gettime(CLOCK_REALTIME, &start);
     OE_TEST(

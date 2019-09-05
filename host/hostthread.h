@@ -13,6 +13,7 @@
 #include <openenclave/bits/defs.h>
 #include <openenclave/bits/result.h>
 #include <openenclave/bits/types.h>
+#include <openenclave/internal/thread.h>
 
 #if __GNUC__
 #include <pthread.h>
@@ -29,8 +30,6 @@ OE_EXTERNC_BEGIN
 typedef pthread_once_t oe_once_type;
 #define OE_H_ONCE_INITIALIZER PTHREAD_ONCE_INIT
 
-typedef pthread_t oe_thread;
-
 typedef pthread_mutex_t oe_mutex;
 #define OE_H_MUTEX_INITIALIZER PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 
@@ -40,8 +39,6 @@ typedef pthread_key_t oe_thread_key;
 
 typedef INIT_ONCE oe_once_type;
 #define OE_H_ONCE_INITIALIZER INIT_ONCE_STATIC_INIT
-
-typedef HANDLE oe_thread;
 
 typedef HANDLE oe_mutex;
 #define OE_H_MUTEX_INITIALIZER INVALID_HANDLE_VALUE
@@ -58,10 +55,7 @@ typedef DWORD oe_thread_key;
  *
  * @returns Returns zero on success.
  */
-oe_result_t oe_thread_create(
-    oe_thread* thread,
-    void* (*func)(void*),
-    void* arg);
+int oe_thread_create(oe_thread_t* thread, void* (*func)(void*), void* arg);
 
 /**
  * Join a platform-specific thread.
@@ -70,7 +64,7 @@ oe_result_t oe_thread_create(
  *
  * @returns Returns zero on success.
  */
-oe_result_t oe_thread_join(oe_thread thread);
+int oe_thread_join(oe_thread_t thread);
 
 /**
  * Returns the identifier of the current thread.
@@ -80,7 +74,7 @@ oe_result_t oe_thread_join(oe_thread thread);
  *
  * @returns Returns the thread identifier of the calling thread.
  */
-oe_thread oe_thread_self(void);
+oe_thread_t oe_thread_self(void);
 
 /**
  * Checks two thread identifiers for equality.
@@ -93,7 +87,7 @@ oe_thread oe_thread_self(void);
  *
  * @returns Returns non-zero if the thread identifiers are equal.
  */
-int oe_thread_equal(oe_thread thread1, oe_thread thread2);
+int oe_thread_equal(oe_thread_t thread1, oe_thread_t thread2);
 
 /**
  * Calls the given function exactly once.

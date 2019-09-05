@@ -16,7 +16,7 @@
 */
 static void* _switchless_ocall_worker(void* arg)
 {
-    host_worker_thread_context* context = (host_worker_thread_context*)arg;
+    host_worker_thread_context_t* context = (host_worker_thread_context_t*)arg;
 
     while (!context->is_stopping)
     {
@@ -30,7 +30,7 @@ static void* _switchless_ocall_worker(void* arg)
     return NULL;
 }
 
-static void oe_stop_worker_threads(oe_switchless_call_manager* manager)
+static void oe_stop_worker_threads(oe_switchless_call_manager_t* manager)
 {
     for (size_t i = 0; i < manager->num_host_workers; i++)
     {
@@ -65,13 +65,13 @@ oe_result_t oe_start_switchless_manager(
         num_host_workers = (uint32_t)enclave->num_bindings;
 
     // Allocate memory for the manager and its arrays
-    oe_switchless_call_manager* manager =
-        calloc(1, sizeof(oe_switchless_call_manager));
+    oe_switchless_call_manager_t* manager =
+        calloc(1, sizeof(oe_switchless_call_manager_t));
     if (manager == NULL)
         OE_RAISE(OE_OUT_OF_MEMORY);
 
-    host_worker_thread_context* contexts =
-        calloc(num_host_workers, sizeof(host_worker_thread_context));
+    host_worker_thread_context_t* contexts =
+        calloc(num_host_workers, sizeof(host_worker_thread_context_t));
     if (contexts == NULL)
         OE_RAISE(OE_OUT_OF_MEMORY);
 
