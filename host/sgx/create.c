@@ -424,7 +424,7 @@ static oe_result_t _configure_enclave(
 
             size_t num_host_workers =
                 ((oe_config_switchless_t*)config)->num_host_workers;
-            oe_start_switchless_manager(enclave, num_host_workers);
+            OE_CHECK(oe_start_switchless_manager(enclave, num_host_workers));
         }
     }
     result = OE_OK;

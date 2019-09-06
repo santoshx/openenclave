@@ -51,11 +51,11 @@ oe_result_t oe_handle_init_switchless(uint64_t arg_in)
     size_t threads_size = sizeof(oe_thread_t) * safe_manager.num_host_workers;
 
     // Ensure the switchless manager and its arrays are outside of enclave
-    if (safe_manager.num_host_workers == 0 ||
-        !oe_is_outside_enclave(manager, sizeof(oe_switchless_call_manager_t)) ||
+    if (!oe_is_outside_enclave(manager, sizeof(oe_switchless_call_manager_t)) ||
         !oe_is_outside_enclave(
             safe_manager.host_worker_contexts, contexts_size) ||
-        !oe_is_outside_enclave(safe_manager.host_worker_threads, threads_size))
+        !oe_is_outside_enclave(safe_manager.host_worker_threads, threads_size) ||
+        safe_manager.num_host_workers == 0)
     {
         OE_RAISE(OE_INVALID_PARAMETER);
     }
