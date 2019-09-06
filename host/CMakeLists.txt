@@ -22,25 +22,6 @@ add_custom_target(tee_untrusted_edl
 
 ##==============================================================================
 ##
-## These rules generate the edge routines for the internal SGX-specific
-## ECALLs/OCALLs used by liboehost/liboecore.
-##
-##==============================================================================
-
-if(OE_SGX)
-    set(SGX_EDL_FILE ${EDL_DIR}/sgx/sgx.edl)
-
-    add_custom_command(
-        OUTPUT sgx_u.h sgx_u.c sgx_args.h
-        DEPENDS ${SGX_EDL_FILE} edger8r
-        COMMAND edger8r --search-path ${EDL_DIR} --untrusted ${SGX_EDL_FILE})
-
-    add_custom_target(sgx_untrusted_edl
-        DEPENDS sgx_u.h sgx_u.c sgx_args.h)
-endif()
-
-##==============================================================================
-##
 ## These rules generate the edge routines for the SYSCALL interface, which is
 ## installed by oe_register_syscall_ecall_function_table().
 ##
@@ -64,7 +45,7 @@ add_custom_target(syscall_untrusted_edl
 
 # OS specific but arch agnostic files.
 if (UNIX)
-  set(PLATFORM_HOST_ONLY_SRC
+  list(APPEND PLATFORM_HOST_ONLY_SRC
     ../common/cert.c
     crypto/openssl/asn1.c
     crypto/openssl/cert.c
@@ -76,7 +57,7 @@ if (UNIX)
     crypto/openssl/sha.c
     linux/hostthread.c)
 
-  set(PLATFORM_SDK_ONLY_SRC
+    list(APPEND PLATFORM_SDK_ONLY_SRC
     ../common/asn1.c
     crypto/openssl/hmac.c
     crypto/openssl/random.c
@@ -84,7 +65,7 @@ if (UNIX)
     linux/time.c
     linux/windows.c)
 elseif (WIN32)
-  set(PLATFORM_HOST_ONLY_SRC
+  list(APPEND PLATFORM_HOST_ONLY_SRC
     ../common/cert.c
     crypto/bcrypt/cert.c
     crypto/bcrypt/crl.c
@@ -95,7 +76,7 @@ elseif (WIN32)
     crypto/bcrypt/pem.c
     windows/hostthread.c)
 
-  set(PLATFORM_SDK_ONLY_SRC
+    list(APPEND PLATFORM_SDK_ONLY_SRC
     ../3rdparty/mbedtls/mbedtls/library/bignum.c
     ../common/asn1.c
     ../common/cert.c
@@ -175,7 +156,7 @@ if (OE_SGX)
       sgx/windows/xstate.c)
   endif()
 
-  set(PLATFORM_FLAGS "-m64")
+  list(APPEND PLATFORM_FLAGS "-m64")
 elseif(OE_TRUSTZONE)
   list(APPEND PLATFORM_SDK_ONLY_SRC
     optee/log.c)
@@ -187,7 +168,7 @@ elseif(OE_TRUSTZONE)
     message(FATAL_ERROR "OP-TEE is not yet supported on platforms other than Linux.")
   endif()
 
-  set(PLATFORM_FLAGS "")
+  list(APPEND PLATFORM_FLAGS "")
 endif()
 
 if (OE_SGX AND WIN32)
@@ -224,6 +205,8 @@ list(APPEND PLATFORM_SDK_ONLY_SRC
   tee_u_wrapper.c
   traceh_enclave.c)
 
+################# end of library creation with host specific.
+
 # Combine the following common code along with the platform specific code and
 # host verification code to get the full oehost target provided by the OE SDK.
 add_library(oehost STATIC
@@ -235,18 +218,34 @@ add_library(oehostverify STATIC ${PLATFORM_HOST_ONLY_SRC})
 target_link_libraries(oehostverify PUBLIC oe_includes)
 target_link_libraries(oehost PUBLIC oe_includes)
 
-if(WIN32)
-  target_link_libraries(oehost PUBLIC ws2_32)
-endif()
-
 if (OE_SGX AND UNIX)
   # Link oedebugrt static library.
   target_link_libraries(oehost PRIVATE oedebugrt)
+elseif(WIN32)
+  target_link_libraries(oehost PUBLIC ws2_32)
 endif()
 
 add_dependencies(oehost syscall_untrusted_edl)
 add_dependencies(oehost tee_untrusted_edl)
+
+##==============================================================================
+##
+## These rules generate the edge routines for the internal SGX-specific
+## ECALLs/OCALLs used by liboehost/liboecore.
+##
+##==============================================================================
+
 if(OE_SGX)
+
+  set(SGX_EDL_FILE ${EDL_DIR}/sgx/sgx.edl)
+
+  add_custom_command(
+      OUTPUT sgx_u.h sgx_u.c sgx_args.h
+      DEPENDS ${SGX_EDL_FILE} edger8r
+      COMMAND edger8r --search-path ${EDL_DIR} --untrusted ${SGX_EDL_FILE})
+
+  add_custom_target(sgx_untrusted_edl
+      DEPENDS sgx_u.h sgx_u.c sgx_args.h)
   add_dependencies(oehost sgx_untrusted_edl)
 endif()
 
@@ -303,13 +302,13 @@ target_include_directories(oehost PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 if (USE_LIBSGX)
   if (WIN32)
-    set(LIBPATHS
+    list(APPEND LIBPATHS
       ${CMAKE_SOURCE_DIR}/prereqs/nuget/EnclaveCommonAPI/lib/native/x64-Release
       ${CMAKE_SOURCE_DIR}/prereqs/nuget/DCAP_Components/build/lib/native/Libraries)
-    set(INCPATHS
+    list(APPEND INCPATHS
       "${CMAKE_SOURCE_DIR}/prereqs/nuget/EnclaveCommonAPI/Header Files"
       "${CMAKE_SOURCE_DIR}/prereqs/nuget/DCAP_Components/build/Header Files")
-    set(WINSYSLOCATION
+    list(APPEND WINSYSLOCATION
        $ENV{WINDIR}/System32)
   endif ()
 
