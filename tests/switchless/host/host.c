@@ -49,15 +49,19 @@ int main(int argc, const char* argv[])
 
     // Enable switchless and configure host worker number
     const uint32_t flags = oe_get_create_flags();
-    oe_config_switchless_t config = {
-        {OE_CONFIG_TYPE_SWITCHLESS, sizeof(oe_config_switchless_t), NULL}, 2};
+
+    oe_enclave_config_context_switchless_t config = {2, 2};
+    oe_enclave_config_t configs[] = {{
+        .config_type = OE_ENCLAVE_CONFIG_CONTEXT_SWITCHLESS,
+        .u.context_switchless_config = &config,
+    }};
 
     if ((result = oe_create_switchless_enclave(
              argv[1],
              OE_ENCLAVE_TYPE_SGX,
              flags,
-             (oe_config_t*)&config,
-             1,
+             configs,
+             OE_COUNTOF(configs),
              &enclave)) != OE_OK)
         oe_put_err("oe_create_enclave(): result=%u", result);
 

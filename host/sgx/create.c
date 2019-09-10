@@ -405,26 +405,30 @@ done:
 /*
 ** _config_enclave()
 **
-** Config the enclave with a list of configurations.
+** Config the enclave with an array of configurations.
 */
 static oe_result_t _configure_enclave(
     oe_enclave_t* enclave,
-    const oe_config_t* configs)
+    const oe_enclave_config_t* configs,
+    uint32_t config_count)
 {
     oe_result_t result = OE_UNEXPECTED;
-    const oe_config_t* config = NULL;
 
-    for (config = configs; config != NULL; config = config->next)
+    for (uint32_t i = 0; i < config_count; i++)
     {
-        // Configure the switchless calls, such as the number of workers.
-        if (config->type == OE_CONFIG_TYPE_SWITCHLESS)
+        switch (configs[i].config_type)
         {
-            if (config->size != sizeof(oe_config_switchless_t))
+            // Configure the switchless calls, such as the number of workers.
+            case OE_ENCLAVE_CONFIG_CONTEXT_SWITCHLESS:
+            {
+                size_t max_host_workers =
+                    configs[i].u.context_switchless_config->max_enclave_workers;
+                OE_CHECK(
+                    oe_start_switchless_manager(enclave, max_host_workers));
+                break;
+            }
+            default:
                 OE_RAISE(OE_INVALID_PARAMETER);
-
-            size_t num_host_workers =
-                ((oe_config_switchless_t*)config)->num_host_workers;
-            OE_CHECK(oe_start_switchless_manager(enclave, num_host_workers));
         }
     }
     result = OE_OK;
@@ -676,10 +680,10 @@ oe_result_t oe_create_enclave(
     const char* enclave_path,
     oe_enclave_type_t enclave_type,
     uint32_t flags,
-    const oe_config_t* configs,
+    const oe_enclave_config_t* configs,
     uint32_t config_count,
     const oe_ocall_func_t* ocall_table,
-    uint32_t ocall_table_size,
+    uint32_t ocall_count,
     oe_enclave_t** enclave_out)
 {
     oe_result_t result = OE_UNEXPECTED;
@@ -781,13 +785,13 @@ oe_result_t oe_create_enclave(
     /* Enclave initialization invokes global constructors which could make
      * ocalls. Therefore setup ocall table prior to initialization. */
     enclave->ocalls = (const oe_ocall_func_t*)ocall_table;
-    enclave->num_ocalls = ocall_table_size;
+    enclave->num_ocalls = ocall_count;
 
     /* Invoke enclave initialization. */
     OE_CHECK(_initialize_enclave(enclave));
 
     /* Apply the list of configurations to the enclave */
-    OE_CHECK(_configure_enclave(enclave, configs));
+    OE_CHECK(_configure_enclave(enclave, configs, config_count));
 
     /* Setup logging configuration */
     oe_log_enclave_init(enclave);

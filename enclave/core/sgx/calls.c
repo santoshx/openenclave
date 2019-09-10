@@ -389,7 +389,7 @@ static void _handle_ecall(
         {
             arg_out = _handle_call_enclave_function(arg_in);
             /* clear up shared memory upon ERET */
-            oe_shm_clear();
+            oe_arena_clear();
             break;
         }
         case OE_ECALL_DESTRUCTOR:
@@ -401,7 +401,7 @@ static void _handle_ecall(
             oe_call_fini_functions();
 
             /* Free shared memory upon destroying enclave */
-            oe_shm_destroy();
+            oe_arena_destroy();
 
 #if defined(OE_USE_DEBUG_MALLOC)
 
@@ -573,7 +573,7 @@ oe_result_t oe_call_host_function_by_table_id(
         OE_RAISE(OE_INVALID_PARAMETER);
 
     /* Initialize the arguments */
-    args = switchless ? oe_shm_calloc(sizeof(*args))
+    args = switchless ? oe_arena_calloc(sizeof(*args))
                       : oe_host_calloc(1, sizeof(*args));
 
     if (args == NULL)
@@ -896,7 +896,7 @@ void oe_abort(void)
     }
 
     // Free the shared memory pools
-    oe_shm_destroy();
+    oe_arena_destroy();
 
     // Return to the latest ECALL.
     _handle_exit(OE_CODE_ERET, 0, __oe_enclave_status);
