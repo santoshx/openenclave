@@ -50,4 +50,4 @@ The following summary will assume that the contents were extracted to `C:\Intel 
       nuget.exe install DCAP_Components -ExcludeVersion -Source "C:\Intel SGX DCAP for Windows v1.2.100.49925\nuget" -OutputDirectory C\openenclave\prereqs\nuget
       nuget.exe install EnclaveCommonAPI -ExcludeVersion -Source "C:\Intel SGX DCAP for Windows v1.2.100.49925\nuget" -OutputDirectory C:\openenclave\prereqs\nuget
       ```
-    - *Note:* EnclaveCommonAPI should be installed as the *very last* nuget package as a temporary workaround for a dependency issue.
+    - *Note:* EnclaveCommonAPI should be installed as the *very last* nuget package as a temporary workaround for a dependency issue. Please see issue #2170, for more details.
