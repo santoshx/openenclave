@@ -1,6 +1,5 @@
 # Installing Intel Data Center Attestation Primitives (DCAP) and its dependencies on Windows
-To use the Intel DCAP libraries for upcoming support for SGX attestation on Windows Server 2016,
-you will need to install the following dependencies:
+
 
 ## [Intel Platform Software for Windows (PSW) v2.4](http://registrationcenter-download.intel.com/akdlm/irc_nas/15654/Intel%20SGX%20PSW%20for%20Windows%20v2.4.100.51291.exe)
 
