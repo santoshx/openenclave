@@ -11,16 +11,16 @@
    - To check your Windows version, run `winver` on the command line.
 
 ## Additional prerequisites
-- [Microsoft Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/)
+- [Microsoft Visual Studio Build Tools 2017](https://aka.ms/vs/15/release/vs_buildtools.exe)
 - [Git for Windows 64-bit](https://git-scm.com/download/win)
 - [OCaml for Windows 64-bit](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/)
 - [Clang/LLVM for Windows 64-bit](http://releases.llvm.org/7.0.1/LLVM-7.0.1-win64.exe)
 - [PSW 2.4 with Intel's DCAP primitives](WindowsManualSGX1FLCDCAPPrereqs.md)
 
-## Microsoft Visual Studio 2017
+## Microsoft Visual Studio Build Tools 2017
 
-Install [Microsoft Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/).
-Visual Studio 2017's CMake support (ver 3.12 or above) is required for building the Open Enclave SDK.
+Install [Visual Studio Build Tools 2017](https://aka.ms/vs/15/release/vs_buildtools.exe).
+Visual Studio Build Tools 2017's CMake support (ver 3.12 or above) is required for building the Open Enclave SDK.
 Note that cmake in Visual Studio 2019 is not fully supported yet.
 For more information about cmake support, refer to
 https://blogs.msdn.microsoft.com/vcblog/2016/10/05/cmake-support-in-visual-studio/
