@@ -15,7 +15,7 @@
 - [Git for Windows 64-bit](https://git-scm.com/download/win)
 - [OCaml for Windows 64-bit](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/)
 - [Clang/LLVM for Windows 64-bit](http://releases.llvm.org/7.0.1/LLVM-7.0.1-win64.exe)
-- [PSW 2.4 with Intel's DCAP primitives](WindowsManualSGX1FLCDCAPPrereqs.md)
+- [Intel's PSW 2.4, Intel's Data Center Attestation primitives and related dependencies](WindowsManualSGX1FLCDCAPPrereqs.md)
 
 ## Microsoft Visual Studio Build Tools 2017
 
