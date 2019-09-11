@@ -4,7 +4,7 @@
 
 After unpacking the self-extracting ZIP executable, install the *PSW_EXE_RS2_and_before* version:
 ```cmd
-C:\Intel SGX PSW for Windows v2.3.100.49777\PSW_EXE_RS2_and_before\Intel(R)_SGX_Windows_x64_PSW_2.3.100.49777.exe
+C:\Intel SGX PSW for Windows v2.4.100.51291\PSW_EXE_RS2_and_before\Intel(R)_SGX_Windows_x64_PSW_2.4.100.51291.exe"
 ```
 
 ## [Azure DCAP client for Windows](https://github.com/Microsoft/Azure-DCAP-Client/tree/master/src/Windows) [optional]
