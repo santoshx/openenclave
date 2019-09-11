@@ -19,7 +19,7 @@
 
 ## Microsoft Visual Studio Build Tools 2017
 
-Install [Visual Studio Build Tools 2017](https://aka.ms/vs/15/release/vs_buildtools.exe).
+Install [Visual Studio Build Tools 2017](https://aka.ms/vs/15/release/vs_buildtools.exe). Choose the "Visual C++ build tools" workload.
 Visual Studio Build Tools 2017's CMake support (ver 3.12 or above) is required for building the Open Enclave SDK.
 Note that cmake in Visual Studio 2019 is not fully supported yet.
 For more information about cmake support, refer to
