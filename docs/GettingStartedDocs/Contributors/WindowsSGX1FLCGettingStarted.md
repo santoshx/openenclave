@@ -1,9 +1,12 @@
-# Getting Started with Open Enclave on Windows with SGX1-FLC mode
+# Getting Started with Open Enclave on Windows for systems with support for SGX1 with Flexible Launch Control(FLC)
 
 ## Platform requirements
 
-- Windows client with windows 10 update august 2019 or Windows Server 2016
-- SGX1 capable system with Flexible Launch Control support. Most likely this will be an Intel Coffeelake system.
+Intel® X86-64bit architecture with SGX1 and Flexible Launch Control (FLC) support. (e.g. Intel Coffee Lake CPU)
+A version of Windows OS with native support for SGX features:
+- For server: Windows Server 2016
+- For client: Windows 10 64-bit version 1709 or newer
+- To check your Windows version, run `winver` on the command line.
 
 ## Install Git and Clone the Open Enclave SDK repo
 
@@ -12,8 +15,7 @@ Download and install Git for Windows from [here](https://git-scm.com/download/wi
 Clone the Open Enclave SDK
 
 ```powershell
-cd c:\
-git clone https://github.com/openenclave/openenclave
+git clone https://github.com/openenclave/openenclave.gits
 ```
 
 This creates a source tree under the directory called openenclave.
@@ -26,26 +28,29 @@ First, change directory into the openenclave repository:
 cd openenclave
 ```
 
-To deploy all the prerequisities for building Open Enclave including Intel's DCAP primitives and Azure's DCAP library, you can run the  following from powershell.
+Run the following from powershell to deploy all the prerequisites for building Open Enclave(including Intel's DCAP primitives and Azure's DCAP library).
 
 ```scripts/install-windows-prereqs.ps1```
 
 ```powershell
 cd scripts
-.\install-windows-prereqs.ps1 -InstallPath PATH_TO_OE_REPO -WithFLC $true -WithAzureDCAPClient $true
+.\install-windows-prereqs.ps1 -InstallPath YOUR_WORKSPACE_PATH_HERE -LaunchConfiguration SGX1FLC -DCAPClientType Azure
 ```
 
-As an example, if you cloned Open Enclave SDK repo into c:\openenclave, you would run the following
+As an example, if you cloned the Open Enclave SDK repo into c:\openenclave, you would run the following
 
 ```powershell
 cd scripts
-.\install-windows-prereqs.ps1 -InstallPath c:\openenclave -WithFLC $true -WithAzureDCAPClient $true
+.\install-windows-prereqs.ps1 -InstallPath C:\openenclave -LaunchConfiguration SGX1FLC -DCAPClientType Azure
 ```
 
 If you prefer to manually install prerequisites, please refer to this [document](WindowsManualInstallPrereqs.md).
 
 ## Build
 
+Launch the [x64 Native Tools Command Prompt for VS 2017](
+https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs)
+Normally this is accessible under the `Visual Studio 2017` folder in the Start Menu.
 To build, first create a build directory ("build" in the example below) and change directory into it.
 Then run `cmake` to configure the build and generate the Makefiles, and then build by running `ninja'.
 
@@ -53,11 +58,11 @@ Then run `cmake` to configure the build and generate the Makefiles, and then bui
 cd C:\openenclave
 mkdir build\x64-Debug
 cd build\x64-Debug
-cmake -G Ninja -DBUILD_ENCLAVES=1 -DUSE_LIBSGX=1 ../..
+cmake -G Ninja -DBUILD_ENCLAVES=1 -DUSE_LIBSGX=1 ..\..
 ninja
 ```
 
-Open Enclave will support attestation workflows outside of Azure using DCAP in an upcoming release.
+The Open Enclave SDK will support attestation workflows outside of Azure using DCAP in an upcoming release.
 
 Refer to the [Advanced Build Information](AdvancedBuildInfo.md) documentation for further information.
 
@@ -65,16 +70,16 @@ Refer to the [Advanced Build Information](AdvancedBuildInfo.md) documentation fo
 
 After building, run all unit test cases using `ctest` to confirm the SDK is built and working as expected.
 
-Run the following command from the build directory:
+Run the following command from the build directory to run tests(In this exammple, we are testing the debug build):
 
 ```cmd
-c:\openenclave\build\x64-Debug>ctest
+ctest
 ```
 
 You will see test logs similar to the following:
 
 ```cmd
-  Test project C:/Users/radhikaj/openenclave/build/x64-Debug
+  Test project C:/openenclave/build/x64-Debug
         Start   1: tests/lockless_queue
   1/107 Test   #1: tests/lockless_queue ..................................   Passed    3.49 sec
         Start   2: tests/mem
@@ -84,16 +89,21 @@ You will see test logs similar to the following:
 100% tests passed, 0 tests failed out of 107
 ```
 
-A clean pass of the above unitests run is an indication that your Open Enclave setup was successful. You can start playing with the Open Enclave samples after following the instructions in the "Install" section below to configure samples for building,
+A clean pass of the above unit tests run is an indication that your Open Enclave setup was successful. You can start playing with the Open Enclave samples after following the instructions in the "Install" section below to configure samples for building,
 
 For more information refer to the [Advanced Test Info](AdvancedTestInfo.md) document.
 
-## Packaging into Nuget Package
+## Installing the SDK on local machine
 
-Instructions coming soon
+To install the SDK on the local machine use the X64 
+```cmd
+cd build\x64-Debug
+ninja install
+```
+This installs the SDK in c:\opt\openenclave.
 
 ## Known Issues
 
 Samples have not yet been ported to Windows.
 
-Not all tests currently run on Windows. See tests/CMakeLists.txt for a list of supported tests.
+Not all tests currently run on Windows. See tests\MakeLists.txt for a list of supported tests.

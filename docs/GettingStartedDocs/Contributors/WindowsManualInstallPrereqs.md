@@ -1,26 +1,21 @@
-# Manually Installing Windows Prerequisites for OpenEnclave
-
-The following are prerequisites for building and running Open Enclave on
-Windows. These are required for both SGX1 mode and SGX1+FLC mode
-
-- Intel® X86-64bit architecture with SGX1 or SGX2
+# Manually Installing Open Enclave Prerequisites for Windows on System which supports SGX1 with Flexible Launch Control(FLC)
+- A system with support for SGX1 with FLC.
+ Note: To check if your system has support for SGX1 with FLC, please look [here](../SGXSupportLevel.md)
 - A version of Windows OS with native support for SGX features:
-   - For server: Windows Server 2016 (or newer)
-   - For client: Windows 10 64-bit with Fall Creators Update (1709) or newer
+   - For server: Windows Server 2016
+   - For client: Windows 10 64-bit version 1709 or newer
+   - To check your Windows version, run `winver` on the command line.
 - [Microsoft Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/)
 - [Git for Windows 64-bit](https://git-scm.com/download/win)
 - [OCaml for Windows 64-bit](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/)
 - [Clang/LLVM for Windows 64-bit](http://releases.llvm.org/7.0.1/LLVM-7.0.1-win64.exe)
-
-## Prerequisistes specific to SGX Mode
-- If using SGX1 mode: [PSW 2.2 for SGX1 mode](WindowsManualSGX1Prereqs.md)
-- If using SGX1+FLC mode: [PSW 2.4 with Intel's DCAP primitives](WindowsManualSGX1FLCDCAPPrereqs.md)
+- [PSW 2.4 with Intel's DCAP primitives](WindowsManualSGX1FLCDCAPPrereqs.md)
 
 ## Microsoft Visual Studio 2017
 
 Install [Microsoft Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/).
 Visual Studio 2017's CMake support (ver 3.12 or above) is required for building the Open Enclave SDK.
-Note cmake in Visual Studio 2019 is not fully supported yet.
+Note that cmake in Visual Studio 2019 is not fully supported yet.
 For more information about cmake support, refer to
 https://blogs.msdn.microsoft.com/vcblog/2016/10/05/cmake-support-in-visual-studio/
 
@@ -65,7 +60,7 @@ C:\Program Files\LLVM\bin\ld.lld.exe
 ## OCaml
 
 Install [OCaml for Windows (64-bit)](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/).
-Please download and install the mingw64 exe for OCaml, for example, https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/ocpwin64-20160113-4.02.1+ocp1-mingw64.exe.
+Please download and install the [mingw64 exe for OCaml](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/ocpwin64-20160113-4.02.1+ocp1-mingw64.exe).
 
 [Alternate OCaml Web-site](https://fdopen.github.io/opam-repository-mingw/installation/)
 

@@ -1,18 +1,25 @@
-# SGX1+ FLC mode: Manually Installing Intel's PSW and Intel Data Center Attestation Primitives (DCAP) [Experimental]
-
+# Installing Intel Data Center Attestation Primitives (DCAP) and its dependencies on Windows
 To use the Intel DCAP libraries for upcoming support for SGX attestation on Windows Server 2016,
 you will need to install the following dependencies:
 
 ## [Intel Platform Software for Windows (PSW) v2.4](http://registrationcenter-download.intel.com/akdlm/irc_nas/15654/Intel%20SGX%20PSW%20for%20Windows%20v2.4.100.51291.exe)
 
-After unpacking the self-extracting ZIP executable, install the *PSW_EXE_RS2_and_before* version for Windows Server 2016:
+After unpacking the self-extracting ZIP executable, install the *PSW_EXE_RS2_and_before* version:
 ```cmd
 C:\Intel SGX PSW for Windows v2.3.100.49777\PSW_EXE_RS2_and_before\Intel(R)_SGX_Windows_x64_PSW_2.3.100.49777.exe
 ```
 
-## [Intel Data Center Attestation Primitives (DCAP) Libraries v1.2](http://registrationcenter-download.intel.com/akdlm/irc_nas/15650/Intel%20SGX%20DCAP%20for%20Windows%20v1.2.100.49925.exe)
+## [Azure DCAP client for Windows](https://github.com/Microsoft/Azure-DCAP-Client/tree/master/src/Windows) [optional]
 
-After unpacking the self-extracting ZIP [executable](http://registrationcenter-download.intel.com/akdlm/irc_nas/15650/Intel%20SGX%20DCAP%20for%20Windows%20v1.2.100.49925.exe), you can refer to the *Intel SGX DCAP Windows SW Installation Guide.pdf*
+Note that this is optional since you can choose an alternate implementation of THE DCAP client or create your own.
+The Azure DCAP client for Windows is necessary if you would like to perform enclave attestation on a Azure Confidential Computing VM. it is available from [nuget.org](https://www.nuget.org/packages/Azure.DCAP.Windows/) and can be installed directly via:
+
+```cmd
+nuget.exe install Azure.DCAP.Windows -ExcludeVersion -Version 0.0.2 -OutputDirectory C:\openenclave\prereqs\nuget
+```
+
+##### [Intel Data Center Attestation Primitives (DCAP) Libraries v1.2](http://registrationcenter-download.intel.com/akdlm/irc_nas/15650/Intel%20SGX%20DCAP%20for%20Windows%20v1.2.100.49925.exe)
+After unpacking the self-extracting ZIP executable, you can refer to the *Intel SGX DCAP Windows SW Installation Guide.pdf*
 for more details on how to install the contents of the package.
 
 The following summary will assume that the contents were extracted to `C:\Intel SGX DCAP for Windows v1.2.100.49925`:
@@ -38,8 +45,7 @@ The following summary will assume that the contents were extracted to `C:\Intel 
       devcon.exe install LC_driver\drivers\b361e4d8-bc01-43fc-b8a6-8d101e659ed1\sgx_base_dev.inf root\SgxLCDevice
       devcon.exe install DCAP_INF\drivers\226fdf07-49d3-46aa-a0ce-f21b6d4a05cf\sgx_dcap_dev.inf root\SgxLCDevice_DCAP
       ```
-    - Note that `devcon.exe` is usually installed to `C:\Program Files (x86)\Windows Kits\10\tools\x64` and is *not* pathed by default.
-
+    - Note that `devcon.exe` is usually installed to `C:\Program Files (x86)\Windows Kits\10\tools\x64` which is not in the PATH environment variable by default.
 4. Install the DCAP nuget packages:
     - The standalone `nuget.exe` [CLI tool](https://dist.nuget.org/win-x86-commandline/latest/nuget.exe) can be used to do this from the command prompt:
       ```cmd
@@ -47,34 +53,3 @@ The following summary will assume that the contents were extracted to `C:\Intel 
       nuget.exe install EnclaveCommonAPI -ExcludeVersion -Source "C:\Intel SGX DCAP for Windows v1.2.100.49925\nuget" -OutputDirectory C:\openenclave\prereqs\nuget
       ```
     - *Note:* EnclaveCommonAPI should be installed as the *very last* nuget package as a temporary workaround for a dependency issue.
-
-## [Azure DCAP client for Windows](https://github.com/Microsoft/Azure-DCAP-Client/tree/master/src/Windows) [optional]
-
-Note that this is optional since you can choose an alternate implementation of DCAP client or create your own. Integration with the Azure DCAP client is not yet enabled on Windows in Open Enclave, and the Microsoft.Azure.DCAP.Client.1.0.0.nupkg
-is not yet available as a binary drop.
-
-For experimental purposes, it can be built from sources using [instructions](https://github.com/microsoft/Azure-DCAP-Client/blob/master/src/Windows/README.MD)
-on the GitHub repo:
-
-- The Azure DCAP Client has a build dependency on version 17134 of the Windows 10 SDK.
-   - This can be added via the Visual Studio Installer under Individual Components > Windows 10 SDK (10.0.17134.0).
-
-- Assuming the resulting .nupkg is put into the `C:\Azure-DCAP-Client` folder, it can be installed using:
-  ```cmd
-  nuget.exe install Microsoft.Azure.DCAP.Client -ExcludeVersion -Source "C:\Azure-DCAP-Client;nuget.org" -OutputDirectory C:\openenclave\prereqs\nuget
-  ```
-
-  Note the inclusion of `nuget.org` as one of the sources. This is necessary because Azure DCAP Client
-  has a dependency on curl and this allows `nuget.exe` to install the curl package dependency tree at the
-  same time. This includes:
-    - curl
-    - curl.redist
-    - libssh2
-    - libssh2.redist
-    - openssl
-    - openssl.redist
-    - zlib
-    - zlib.redist
-
-- The [Visual C++ Redistributable for Visual Studio 2012](https://www.microsoft.com/en-us/download/confirmation.aspx?id=30679&6B49FDFB-8E5B-4B07-BC31-15695C5A2143=1) will also need to be installed to provide MSVCR110.dll for the Release build of curl.
-  - The redistributable install does not include MSVCR110d.dll needed for the Debug version of curl.
