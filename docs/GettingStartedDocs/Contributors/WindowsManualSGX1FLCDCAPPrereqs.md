@@ -1,4 +1,4 @@
-# Installing Intel Data Center Attestation Primitives (DCAP) and its dependencies on Windows
+# SGX1 with Flexible Launch Control (FLC) Prerequisites on Windows
 
 ## [Intel Platform Software for Windows (PSW) v2.4](http://registrationcenter-download.intel.com/akdlm/irc_nas/15654/Intel%20SGX%20PSW%20for%20Windows%20v2.4.100.51291.exe)
 

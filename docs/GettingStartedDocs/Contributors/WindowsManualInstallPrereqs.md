@@ -10,7 +10,7 @@
    - For client: Windows 10 64-bit version 1709 or newer
    - To check your Windows version, run `winver` on the command line.
 
-## Additional prerequisites
+## Software prerequisites
 - [Microsoft Visual Studio Build Tools 2017](https://aka.ms/vs/15/release/vs_buildtools.exe)
 - [Git for Windows 64-bit](https://git-scm.com/download/win)
 - [OCaml for Windows 64-bit](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/)

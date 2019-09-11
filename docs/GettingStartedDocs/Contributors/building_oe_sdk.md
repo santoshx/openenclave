@@ -48,7 +48,7 @@ On Linux
 
 On Windows
  - [Set up Open Enclave SDK for SGX1+FLC](WindowsSGX1FLCGettingStarted.md)
- - Support for Open Enclave SDK on SGX1 is not available
+ - [Set up Open Enclave SDK for SGX1](WindowsSGX1GettingStarted.md)
  - Simulation mode is not supported on Windows
 
 ## Samples
