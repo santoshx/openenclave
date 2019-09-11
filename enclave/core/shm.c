@@ -11,10 +11,10 @@
 #define ALIGNMENT sizeof(uint64_t)
 
 // the per-thread shared memory pool
-__thread Shared_memory_arena arena = {0};
+__thread shared_memory_arena_t arena = {0};
 
 // the global list of shared memory pools
-Shared_memory_arena* _arena_list = NULL;
+shared_memory_arena_t* _arena_list = NULL;
 
 static oe_spinlock_t _arena_list_lock = OE_SPINLOCK_INITIALIZER;
 
@@ -99,11 +99,11 @@ void oe_arena_clear()
 // Free all shared memory pools in the global list
 void oe_arena_destroy()
 {
-    Shared_memory_arena* next = _arena_list;
+    shared_memory_arena_t* next = _arena_list;
     while (next != NULL)
     {
         oe_unreserve_arena(next->buffer);
-        Shared_memory_arena* current = next;
+        shared_memory_arena_t* current = next;
         next = next->next;
         memset(current, 0, sizeof(arena));
     }

@@ -72,7 +72,7 @@ int main(int argc, const char* argv[])
     struct timespec start, end;
 
     // Increase this number to have a meaningful performance measurement
-    int repeats = 1;
+    int repeats = 10;
 
     clock_gettime(CLOCK_REALTIME, &start);
     OE_TEST(

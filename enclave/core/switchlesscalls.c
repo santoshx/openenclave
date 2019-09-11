@@ -7,7 +7,7 @@
 #include <openenclave/internal/raise.h>
 
 // The number of host thread workers. Initialized by host through ECALL
-static size_t _num_host_workers = 0;
+static size_t _host_worker_count = 0;
 
 // The array of host worker contexts. Initialized by host through ECALL
 static host_worker_thread_context_t* _host_worker_contexts;
@@ -23,7 +23,7 @@ static host_worker_thread_context_t* _host_worker_contexts;
 */
 bool oe_is_switchless_initialized()
 {
-    return _num_host_workers != 0;
+    return _host_worker_count != 0;
 }
 
 /*
@@ -62,7 +62,7 @@ oe_result_t oe_handle_init_switchless(uint64_t arg_in)
     }
 
     // Copy the worker context array pointer and its size to avoid TOCTOU
-    _num_host_workers = safe_manager.num_host_workers;
+    _host_worker_count = safe_manager.num_host_workers;
     _host_worker_contexts = safe_manager.host_worker_contexts;
 
 done:
@@ -85,7 +85,7 @@ oe_result_t oe_post_switchless_ocall(oe_call_host_function_args_t* args)
     args->result = __OE_RESULT_MAX; // Means the call hasn't been processed.
 
     // Cycle through the worker contexts until we find a free worker.
-    size_t tries = _num_host_workers;
+    size_t tries = _host_worker_count;
     while (tries--)
     {
         if (_host_worker_contexts[tries].call_arg == NULL)
