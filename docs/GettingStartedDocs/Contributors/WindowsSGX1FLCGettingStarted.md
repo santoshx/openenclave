@@ -35,12 +35,21 @@ Run the following from powershell to deploy all the prerequisites for building O
 
 ```scripts/install-windows-prereqs.ps1```
 
+To install the prerequisites along with the Azure Data Center Attestation Primitives (DCAP) Client, use the below command. The Azure DCAP Client is necessary to perform attestation on an Azure Confidential Computing VM.
+
 ```powershell
 cd scripts
 .\install-windows-prereqs.ps1 -InstallPath YOUR_WORKSPACE_PATH_HERE -LaunchConfiguration SGX1FLC -DCAPClientType Azure
 ```
+If you would like to skip the installation of the Azure DCAP Client, use the command below.
 
-As an example, if you cloned the Open Enclave SDK repo into c:\openenclave, you would run the following
+```powershell
+cd scripts
+.\install-windows-prereqs.ps1 -InstallPath YOUR_WORKSPACE_PATH_HERE -LaunchConfiguration SGX1FLC -DCAPClientType None
+```
+If there is another DCAP Client type that you would like to install, you are welcome to submit a pull request to add support for that DCAP Client.
+
+As an example, if you cloned the Open Enclave SDK repo into C:\openenclave and want to install the Azure DCAP Client, you would run the following command.
 
 ```powershell
 cd scripts
@@ -79,7 +88,7 @@ ninja
 
 After building, run all unit test cases using `ctest` to confirm the SDK is built and working as expected.
 
-Run the following command from the build directory to run tests(In this exammple, we are testing the debug build):
+Run the following command from the build directory to run tests(In this example, we are testing the debug build):
 
 ```cmd
 ctest
@@ -106,11 +115,13 @@ For more information refer to the [Advanced Test Info](AdvancedTestInfo.md) docu
 
 ## Installing the SDK on local machine
 
-To install the SDK on the local machine use the X64 
+To install the SDK on the local machine use the following:
+
 ```cmd
 cd build\x64-Debug
 ninja install
 ```
+
 This installs the SDK in c:\opt\openenclave.
 
 ## Known Issues

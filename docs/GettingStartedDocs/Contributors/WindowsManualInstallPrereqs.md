@@ -1,9 +1,9 @@
 
-# Manually Installing Open Enclave Prerequisites for Windows on a System which supports SGX1 with Flexible Launch Control(FLC)
+# Manually Installing Open Enclave Prerequisites for Windows on a System which supports SGX
 
 ## Platform requirements
-- A system with support for SGX1 with FLC.
- Note: To check if your system has support for SGX1 with FLC, please look [here](../SGXSupportLevel.md)
+- A system with support for SGX1 or SGX1 with Flexible Launch Control (FLC).
+ Note: To check if your system has support for SGX1 with or without FLC, please look [here](../SGXSupportLevel.md).
  
 - A version of Windows OS with native support for SGX features:
    - For server: Windows Server 2016
@@ -15,7 +15,11 @@
 - [Git for Windows 64-bit](https://git-scm.com/download/win)
 - [OCaml for Windows 64-bit](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/)
 - [Clang/LLVM for Windows 64-bit](http://releases.llvm.org/7.0.1/LLVM-7.0.1-win64.exe)
-- [Intel's PSW 2.4, Intel's Data Center Attestation primitives and related dependencies](WindowsManualSGX1FLCDCAPPrereqs.md)
+
+## Prerequisites specific to SGX support on your system
+- For systems with support for SGX1  - [Intel's PSW 2.2](WindowsManualSGX1Prereqs.md)
+- For systems with support for SGX1 + FLC - 
+ [Intel's PSW 2.4, Intel's Data Center Attestation primitives and related dependencies](WindowsManualSGX1FLCDCAPPrereqs.md)
 
 ## Microsoft Visual Studio Build Tools 2017
 
