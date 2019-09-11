@@ -54,6 +54,7 @@ Normally this is accessible under the `Visual Studio 2017` folder in the Start M
 To build, first create a build directory ("build" in the example below) and change directory into it.
 Then run `cmake` to configure the build and generate the Makefiles, and then build by running `ninja'.
 
+To build debug enclaves
 ```cmd
 cd C:\openenclave
 mkdir build\x64-Debug
@@ -62,9 +63,14 @@ cmake -G Ninja -DBUILD_ENCLAVES=1 -DUSE_LIBSGX=1 ..\..
 ninja
 ```
 
-The Open Enclave SDK will support attestation workflows outside of Azure using DCAP in an upcoming release.
-
-Refer to the [Advanced Build Information](AdvancedBuildInfo.md) documentation for further information.
+Similarly, to build release enclaves
+```cmd
+cd C:\openenclave
+mkdir build\x64-Release
+cd build\x64-Release
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_ENCLAVES=1 ../..
+ninja
+```
 
 ## Run unittests
 
