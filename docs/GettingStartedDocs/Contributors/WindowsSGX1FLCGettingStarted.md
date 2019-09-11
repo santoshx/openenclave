@@ -1,13 +1,5 @@
 # Getting Started with Open Enclave on Windows for systems with support for SGX1 with Flexible Launch Control(FLC)
 
-## Platform requirements
-
-Intel® X86-64bit architecture with SGX1 and Flexible Launch Control (FLC) support. (e.g. Intel Coffee Lake CPU)
-A version of Windows OS with native support for SGX features:
-- For server: Windows Server 2016
-- For client: Windows 10 64-bit version 1709 or newer
-- To check your Windows version, run `winver` on the command line.
-
 ## Install Git and Clone the Open Enclave SDK repo
 
 Download and install Git for Windows from [here](https://git-scm.com/download/win)

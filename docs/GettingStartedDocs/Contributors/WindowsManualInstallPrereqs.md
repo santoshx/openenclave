@@ -1,10 +1,16 @@
-# Manually Installing Open Enclave Prerequisites for Windows on System which supports SGX1 with Flexible Launch Control(FLC)
+
+# Manually Installing Open Enclave Prerequisites for Windows on a System which supports SGX1 with Flexible Launch Control(FLC)
+
+## Platform requirements
 - A system with support for SGX1 with FLC.
  Note: To check if your system has support for SGX1 with FLC, please look [here](../SGXSupportLevel.md)
+ 
 - A version of Windows OS with native support for SGX features:
    - For server: Windows Server 2016
    - For client: Windows 10 64-bit version 1709 or newer
    - To check your Windows version, run `winver` on the command line.
+
+## Additional prerequisites
 - [Microsoft Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/)
 - [Git for Windows 64-bit](https://git-scm.com/download/win)
 - [OCaml for Windows 64-bit](https://www.ocamlpro.com/pub/ocpwin/ocpwin-builds/ocpwin64/20160113/)
