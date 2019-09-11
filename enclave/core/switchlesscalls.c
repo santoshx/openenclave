@@ -38,17 +38,19 @@ bool oe_is_switchless_initialized()
 oe_result_t oe_handle_init_switchless(uint64_t arg_in)
 {
     oe_result_t result = OE_OK;
+    oe_switchless_call_manager_t* manager = NULL;
+    oe_switchless_call_manager_t safe_manager;
+    size_t contexts_size, threads_size;
 
     if (arg_in == 0)
         OE_RAISE(OE_INVALID_PARAMETER);
 
-    oe_switchless_call_manager_t* manager =
-        (oe_switchless_call_manager_t*)arg_in;
-    oe_switchless_call_manager_t safe_manager = *manager;
+    manager = (oe_switchless_call_manager_t*)arg_in;
+    safe_manager = *manager;
 
-    size_t contexts_size =
+    contexts_size =
         sizeof(host_worker_thread_context_t) * safe_manager.num_host_workers;
-    size_t threads_size = sizeof(oe_thread_t) * safe_manager.num_host_workers;
+    threads_size = sizeof(oe_thread_t) * safe_manager.num_host_workers;
 
     // Ensure the switchless manager and its arrays are outside of enclave
     if (!oe_is_outside_enclave(manager, sizeof(oe_switchless_call_manager_t)) ||

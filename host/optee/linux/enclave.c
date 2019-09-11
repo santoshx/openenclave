@@ -86,7 +86,7 @@ static void _initialize_enclave_host()
     oe_register_syscall_ocall_function_table();
 }
 
-oe_result_t oe_handle_call_host_function(
+oe_result_t _handle_call_host_function(
     void* inout_buffer,
     size_t inout_buffer_size,
     void* input_buffer,
@@ -187,7 +187,7 @@ static TEEC_Result _handle_generic_rpc(
     switch ((oe_func_t)func)
     {
         case OE_OCALL_CALL_HOST_FUNCTION:
-            oe_handle_call_host_function(
+            _handle_call_host_function(
                 inout_buffer,
                 inout_buffer_size,
                 input_buffer,
@@ -428,7 +428,8 @@ oe_result_t oe_create_enclave(
         (flags & OE_ENCLAVE_FLAG_RESERVED) ||
         (!(flags & OE_ENCLAVE_FLAG_SIMULATE) &&
          (flags & OE_ENCLAVE_FLAG_DEBUG)) ||
-        config || config_size > 0)
+        (config_count > 0 && configs == NULL) ||
+        (config_count == 0 && configs != NULL))
         OE_RAISE(OE_INVALID_PARAMETER);
 
     /* Convert the path into a TEE UUID. */
