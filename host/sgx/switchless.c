@@ -102,7 +102,10 @@ oe_result_t oe_start_switchless_manager(
 
     // Inform the enclave about the switchless manager through an ECALL
     OE_CHECK(oe_ecall(
-        enclave, OE_ECALL_INIT_SWITCHLESS, (uint64_t)manager, &result_out));
+        enclave,
+        OE_ECALL_INIT_CONTEXT_SWITCHLESS,
+        (uint64_t)manager,
+        &result_out));
     OE_CHECK((oe_result_t)result_out);
 
     result = OE_OK;

@@ -5642,6 +5642,9 @@ __init_pat(money_base::pattern& pat, basic_string<charT>& __curr_symbol_,
                 return;
             case 1:  // Space between currency-and-sign or currency and value.
                 pat.field[1] = none;
+
+
+
                 pat.field[2] = symbol;
                 if (!symbol_contains_sep) {
                     // We insert the space into the symbol instead of

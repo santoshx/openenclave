@@ -31,7 +31,7 @@ bool oe_is_switchless_initialized()
 **
 ** oe_handle_init_switchless()
 **
-** Handle the OE_ECALL_INIT_SWITCHLESS from host.
+** Handle the OE_ECALL_INIT_CONTEXT_SWITCHLESS from host.
 **
 **==============================================================================
 */

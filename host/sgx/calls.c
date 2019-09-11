@@ -357,9 +357,9 @@ static const char* oe_ecall_str(oe_func_t ecall)
     {
         "DESTRUCTOR",
         "INIT_ENCLAVE",
-        "INIT_SWITCHLESS",
         "CALL_ENCLAVE_FUNCTION",
-        "VIRTUAL_EXCEPTION_HANDLER"
+        "VIRTUAL_EXCEPTION_HANDLER",
+        "INIT_CONTEXT_SWITCHLESS",
     };
     // clang-format on
 
