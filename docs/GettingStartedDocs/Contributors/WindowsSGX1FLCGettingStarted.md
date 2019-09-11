@@ -31,7 +31,7 @@ First, change directory into the openenclave repository:
 cd openenclave
 ```
 
-Run the following from powershell to deploy all the prerequisites for building Open Enclave(including Intel's DCAP primitives and Azure's DCAP library).
+Run the following from powershell to deploy all the prerequisites for building Open Enclave (including Intel's DCAP primitives and Azure's DCAP library).
 
 ```scripts/install-windows-prereqs.ps1```
 

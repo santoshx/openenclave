@@ -1,6 +1,5 @@
 # Installing Intel Data Center Attestation Primitives (DCAP) and its dependencies on Windows
 
-
 ## [Intel Platform Software for Windows (PSW) v2.4](http://registrationcenter-download.intel.com/akdlm/irc_nas/15654/Intel%20SGX%20PSW%20for%20Windows%20v2.4.100.51291.exe)
 
 After unpacking the self-extracting ZIP executable, install the *PSW_EXE_RS2_and_before* version:
@@ -10,7 +9,7 @@ C:\Intel SGX PSW for Windows v2.3.100.49777\PSW_EXE_RS2_and_before\Intel(R)_SGX_
 
 ## [Azure DCAP client for Windows](https://github.com/Microsoft/Azure-DCAP-Client/tree/master/src/Windows) [optional]
 
-Note that this is optional since you can choose an alternate implementation of THE DCAP client or create your own.
+Note that this is optional since you can choose an alternate implementation of the DCAP client or create your own.
 The Azure DCAP client for Windows is necessary if you would like to perform enclave attestation on a Azure Confidential Computing VM. it is available from [nuget.org](https://www.nuget.org/packages/Azure.DCAP.Windows/) and can be installed directly via:
 
 ```cmd
