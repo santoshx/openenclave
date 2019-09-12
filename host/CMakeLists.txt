@@ -78,25 +78,6 @@ add_custom_target(tee_untrusted_edl
 
 ##==============================================================================
 ##
-## These rules generate the edge routines for the internal SGX-specific
-## ECALLs/OCALLs used by liboehost/liboecore.
-##
-##==============================================================================
-
-if(OE_SGX)
-    set(SGX_EDL_FILE ${EDL_DIR}/sgx/sgx.edl)
-
-    add_custom_command(
-        OUTPUT sgx_u.h sgx_u.c sgx_args.h
-        DEPENDS ${SGX_EDL_FILE} edger8r
-        COMMAND edger8r --search-path ${EDL_DIR} --untrusted ${SGX_EDL_FILE})
-
-    add_custom_target(sgx_untrusted_edl
-        DEPENDS sgx_u.h sgx_u.c sgx_args.h)
-endif()
-
-##==============================================================================
-##
 ## These rules generate the edge routines for the SYSCALL interface, which is
 ## installed by oe_register_syscall_ecall_function_table().
 ##
@@ -173,6 +154,25 @@ endif()
 
 # SGX specific files.
 if (OE_SGX)
+  ##==============================================================================
+  ##
+  ## These rules generate the edge routines for the internal SGX-specific
+  ## ECALLs/OCALLs used by liboehost/liboecore.
+  ##
+  ##==============================================================================
+  
+  if(OE_SGX)
+  set(SGX_EDL_FILE ${EDL_DIR}/sgx/sgx.edl)
+  
+  add_custom_command(
+      OUTPUT sgx_u.h sgx_u.c sgx_args.h
+      DEPENDS ${SGX_EDL_FILE} edger8r
+      COMMAND edger8r --search-path ${EDL_DIR} --untrusted ${SGX_EDL_FILE})
+  
+  add_custom_target(sgx_untrusted_edl
+      DEPENDS sgx_u.h sgx_u.c sgx_args.h)
+  endif()
+
   list(APPEND PLATFORM_HOST_ONLY_SRC
     ../common/sgx/qeidentity.c
     ../common/sgx/quote.c
