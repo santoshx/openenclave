@@ -197,37 +197,18 @@ add_library(oehostverify STATIC ${PLATFORM_HOST_ONLY_SRC})
 # -rdynamic link flag). We do this by default for the oehostverify target too.
 add_library(oehostapp INTERFACE)
 
-##==============================================================================
-##
-## Link target libraries, as needed
-##
-##==============================================================================
+target_link_libraries(oehostverify PUBLIC oe_includes)
+target_link_libraries(oehost PUBLIC oe_includes)
 
-# Library Dependency
-find_package(Threads REQUIRED)
-
-if(NOT "${OEHOST_PUBLIC_LIBRARIES}" STREQUAL "")
-  target_link_libraries(oehost PUBLIC ${OEHOST_PUBLIC_LIBRARIES})
+if (OE_SGX AND UNIX)
+  # Link oedebugrt static library.
+  target_link_libraries(oehost PRIVATE oedebugrt)
 endif()
 
-if(NOT "${OEHOST_PRIVATE_LIBRARIES}" STREQUAL "")
-  target_link_libraries(oehost PRIVATE ${OEHOST_PRIVATE_LIBRARIES})
-endif()
-
-if(NOT "${OEHOST_VERIFY_PUBLIC_LIBRARIES}" STREQUAL "")
-  target_link_libraries(oehostverify PUBLIC ${OEHOST_VERIFY_PUBLIC_LIBRARIES})
-endif()
-
-if(NOT "${OEHOST_VERIFY_PRIVATE_LIBRARIES}" STREQUAL "")
-  target_link_libraries(oehostverify PRIVATE ${OEHOST_PRIVATE_LIBRARIES})
-endif()
-
-if(NOT "${OEHOST_VERIFY_INTERFACE_LIBRARIES}" STREQUAL "")
-  target_link_libraries(oehostverify INTERFACE  ${OEHOST_VERIFY_INTERFACE_LIBRARIES})
-endif()
-
-if(NOT "${OEHOST_APP_INTERFACE_LIBRARIES}" STREQUAL "")
-  target_link_libraries(oehostapp INTERFACE  ${OEHOST_APP_INTERFACE_LIBRARIES})
+add_dependencies(oehost syscall_untrusted_edl)
+add_dependencies(oehost tee_untrusted_edl)
+if(OE_SGX)
+  add_dependencies(oehost sgx_untrusted_edl)
 endif()
 
 # TODO: Replace these with `find_package` and add as dependencies to
@@ -259,18 +240,21 @@ endif ()
 find_package(Threads REQUIRED)
 
 if (UNIX)
+  target_link_libraries(oehost PRIVATE crypto dl Threads::Threads)
+  target_link_libraries(oehostverify PRIVATE crypto dl Threads::Threads)
 
   if (OE_TRUSTZONE)
     target_include_directories(oehost PRIVATE
       ${OE_TZ_OPTEE_CLIENT_INC})
+    target_link_libraries(oehost PRIVATE teec)
   endif ()
 elseif (WIN32)
   target_include_directories(oehost PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
-  #target_link_libraries(oehost PRIVATE bcrypt Crypt32)
+  target_link_libraries(oehost PRIVATE bcrypt Crypt32)
   target_include_directories(oehostverify PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
-  #target_link_libraries(oehostverify PRIVATE bcrypt Crypt32)
+  target_link_libraries(oehostverify PRIVATE bcrypt Crypt32)
 
   # TODO: Handle TrustZone on Windows.
 endif ()
