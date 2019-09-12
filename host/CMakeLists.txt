@@ -138,12 +138,6 @@ elseif(OE_TRUSTZONE)
   add_subdirectory(optee)
 endif()
 
-if (OE_SGX AND WIN32)
-  # oedebugrt is accessed via a bridge on Win32 and need not be linked.    
-  list(APPEND PLATFORM_SDK_ONLY_SRC
-    sgx/windows/debugrtbridge.c)
-endif()
-
 # Common host verification files that work on any OS/architecture.
 list(APPEND PLATFORM_HOST_ONLY_SRC
   ../common/datetime.c
