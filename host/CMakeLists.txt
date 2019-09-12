@@ -173,6 +173,18 @@ list(APPEND PLATFORM_SDK_ONLY_SRC
   tee_u_wrapper.c
   traceh_enclave.c)
 
+# Common public libraries used by the oehost target
+list(APPEND OEHOST_PUBLIC_LIBRARIES
+  oe_includes)
+
+# Common public libraries used by the oehostverify target
+list(APPEND OEHOST_VERIFY_PUBLIC_LIBRARIES
+  oe_includes)
+
+# Common interface libraries used by the oehostapp target
+list(APPEND OEHOST_APP_INTERFACE_LIBRARIES
+  oehost)
+
 # Combine the following common code along with the platform specific code and
 # host verification code to get the full oehost target provided by the OE SDK.
 add_library(oehost STATIC
@@ -181,12 +193,12 @@ add_library(oehost STATIC
 
 add_library(oehostverify STATIC ${PLATFORM_HOST_ONLY_SRC})
 
+# Convenience library for creating a host-app (that needs the
+# -rdynamic link flag). We do this by default for the oehostverify target too.
+add_library(oehostapp INTERFACE)
+
 target_link_libraries(oehostverify PUBLIC oe_includes)
 target_link_libraries(oehost PUBLIC oe_includes)
-
-if(WIN32)
-  target_link_libraries(oehost PUBLIC ws2_32)
-endif()
 
 if (OE_SGX AND UNIX)
   # Link oedebugrt static library.
@@ -330,10 +342,6 @@ target_compile_definitions(oehostverify
 # TODO: Remove this hard coded output directory.
 set_property(TARGET oehost PROPERTY
   ARCHIVE_OUTPUT_DIRECTORY ${OE_LIBDIR}/openenclave/host)
-
-# Convenience library for creating a host-app (that needs the
-# -rdynamic link flag). We do this by default for the oehostverify target too.
-add_library(oehostapp INTERFACE)
 
 target_link_libraries(oehostapp INTERFACE oehost)
 
