@@ -190,6 +190,12 @@ list(APPEND OEHOST_DEPENDENCIES
   syscall_untrusted_edl
   tee_untrusted_edl)
 
+##==============================================================================
+##
+## Create libraries
+##
+##==============================================================================
+
 # Combine the following common code along with the platform specific code and
 # host verification code to get the full oehost target provided by the OE SDK.
 add_library(oehost STATIC
@@ -216,10 +222,14 @@ add_dependencies(oehost ${OEHOST_DEPENDENCIES})
 ##
 ##==============================================================================
 
+# Library Dependency
+find_package(Threads REQUIRED)
+
+if(NOT "${OEHOST_PUBLIC_LIBRARIES}" STREQUAL "")
+  target_link_libraries(oehost PUBLIC ${OEHOST_PUBLIC_LIBRARIES})
+endif()
+
 target_link_libraries(oehostverify PUBLIC oe_includes)
-target_link_libraries(oehost PUBLIC oe_includes)
-
-
 
 
 if (OE_SGX AND UNIX)
@@ -252,8 +262,6 @@ if (UNIX)
     endif ()
   endif ()
 endif ()
-
-find_package(Threads REQUIRED)
 
 if (UNIX)
   target_link_libraries(oehost PRIVATE crypto dl Threads::Threads)
