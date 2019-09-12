@@ -233,7 +233,9 @@ if(NOT "${OEHOST_PRIVATE_LIBRARIES}" STREQUAL "")
   target_link_libraries(oehost PRIVATE ${OEHOST_PRIVATE_LIBRARIES})
 endif()
 
-target_link_libraries(oehostverify PUBLIC oe_includes)
+if(NOT "${OEHOST_VERIFY_PUBLIC_LIBRARIES}" STREQUAL "")
+  target_link_libraries(oehostverify PUBLIC ${OEHOST_VERIFY_PUBLIC_LIBRARIES})
+endif()
 
 # TODO: Replace these with `find_package` and add as dependencies to
 # the CMake package.
