@@ -108,97 +108,34 @@ else()
   message(FATAL_ERROR "Unknown OS. Only supported OSes are Linux and Windows")
 endif()
 
-# SGX specific files.
+##==============================================================================
+##
+## these rules configure targets and dependencies based on platform logic
+##
+##==============================================================================
+
+# SGX and TrustZone specific
 if (OE_SGX)
+    ##==============================================================================
+    ##
+    ## These rules generate the edge routines for the internal SGX-specific
+    ## ECALLs/OCALLs used by liboehost/liboecore.
+    ##
+    ##==============================================================================
 
-  ##==============================================================================
-  ##
-  ## These rules generate the edge routines for the internal SGX-specific
-  ## ECALLs/OCALLs used by liboehost/liboecore.
-  ##
-  ##==============================================================================
-  
-  set(SGX_EDL_FILE ${EDL_DIR}/sgx/sgx.edl)
-  
-  add_custom_command(
-      OUTPUT sgx_u.h sgx_u.c sgx_args.h
-      DEPENDS ${SGX_EDL_FILE} edger8r
-      COMMAND edger8r --search-path ${EDL_DIR} --untrusted ${SGX_EDL_FILE})
-  
-  add_custom_target(sgx_untrusted_edl
-      DEPENDS sgx_u.h sgx_u.c sgx_args.h)
+    set(SGX_EDL_FILE ${EDL_DIR}/sgx/sgx.edl)
 
-  list(APPEND PLATFORM_HOST_ONLY_SRC
-    ../common/sgx/qeidentity.c
-    ../common/sgx/quote.c
-    ../common/sgx/report.c
-    ../common/sgx/revocation.c
-    ../common/sgx/sgxcertextensions.c
-    ../common/sgx/tcbinfo.c
-    ../common/sgx/tlsverifier.c
-    sgx/hostverify_report.c
-    sgx/sgxquoteprovider.c)
+    add_custom_command(
+        OUTPUT sgx_u.h sgx_u.c sgx_args.h
+        DEPENDS ${SGX_EDL_FILE} edger8r
+        COMMAND edger8r --search-path ${EDL_DIR} --untrusted ${SGX_EDL_FILE})
 
-  list(APPEND PLATFORM_SDK_ONLY_SRC
-    sgx/calls.c
-    sgx/create.c
-    sgx/elf.c
-    sgx/enclave.c
-    sgx/enclavemanager.c
-    sgx/exception.c
-    sgx/sgx_u_wrapper.c
-    sgx/load.c
-    sgx/loadelf.c
-    sgx/loadpe.c
-    sgx/ocalls.c
-    sgx/quote.c
-    sgx/registers.c
-    sgx/report.c
-    sgx/sgxload.c
-    sgx/sgxmeasure.c
-    sgx/sgxquote.c
-    sgx/sgxsign.c
-    sgx/sgxtypes.c)
+    add_custom_target(sgx_untrusted_edl
+        DEPENDS sgx_u.h sgx_u.c sgx_args.h)
 
-  # OS specific as well.
-  if (UNIX)
-    list(APPEND PLATFORM_HOST_ONLY_SRC
-        sgx/linux/sgxquoteproviderloader.c)
-
-    list(APPEND PLATFORM_SDK_ONLY_SRC
-      sgx/linux/aep.S
-      sgx/linux/aesm.c
-      sgx/linux/enter.S
-      sgx/linux/entersim.S
-      sgx/linux/exception.c
-      sgx/linux/sgxioctl.c
-      sgx/linux/xstate.c)
-  else()
-    list(APPEND PLATFORM_HOST_ONLY_SRC
-      sgx/windows/sgxquoteproviderloader.c)
-
-    list(APPEND PLATFORM_SDK_ONLY_SRC
-      sgx/windows/aep.asm
-      sgx/windows/aesm.c
-      sgx/windows/enter.asm
-      sgx/windows/entersim.asm
-      sgx/windows/exception.c
-      sgx/windows/xstate.c)
-  endif()
-
-  set(PLATFORM_FLAGS "-m64")
+  add_subdirectory(sgx)
 elseif(OE_TRUSTZONE)
-  list(APPEND PLATFORM_SDK_ONLY_SRC
-    optee/log.c)
-  
-  if (UNIX)
-    list(APPEND PLATFORM_SDK_ONLY_SRC
-      optee/linux/enclave.c)
-  else()
-    message(FATAL_ERROR "OP-TEE is not yet supported on platforms other than Linux.")
-  endif()
-
-  set(PLATFORM_FLAGS "")
+  add_subdirectory(optee)
 endif()
 
 if (OE_SGX AND WIN32)
