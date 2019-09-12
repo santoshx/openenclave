@@ -95,7 +95,7 @@ add_custom_target(syscall_untrusted_edl
 ##
 ##==============================================================================
 
-# SGX and TrustZonespecific
+# SGX and TrustZone specific
 if (OE_SGX)
     ##==============================================================================
     ##
@@ -315,10 +315,6 @@ if(NOT "${OEHOST_VERIFY_PRIVATE_DIRECTORIES}" STREQUAL "")
 endif()
 
 if(UNIX)
-  if (OE_TRUSTZONE)
-    target_include_directories(oehost PRIVATE
-      ${OE_TZ_OPTEE_CLIENT_INC})
-  endif ()
 elseif(WIN32)
   target_link_libraries(oehost PRIVATE bcrypt Crypt32)
   target_include_directories(oehostverify PRIVATE
@@ -341,8 +337,8 @@ add_dependencies(oehost ${OEHOST_DEPENDENCIES})
 ##
 ##==============================================================================
 
-target_compile_options(oehost PRIVATE ${OEHOST_TARGET_COMPILE_PRIVATE_OPTIONS} )
 target_compile_options(oehost PUBLIC ${OEHOST_TARGET_COMPILE_PUBLIC_OPTIONS})
+target_compile_options(oehost PRIVATE ${OEHOST_TARGET_COMPILE_PRIVATE_OPTIONS} )
 
 ##==============================================================================
 ##
