@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #include "switchlesscalls.h"
+#include <openenclave/edger8r/enclave.h>
 #include <openenclave/enclave.h>
 #include <openenclave/internal/atomic.h>
 #include <openenclave/internal/raise.h>
@@ -10,7 +11,7 @@
 static size_t _host_worker_count = 0;
 
 // The array of host worker contexts. Initialized by host through ECALL
-static oe_host_worker_context_t* _host_worker_contexts;
+static oe_host_worker_context_t* _host_worker_contexts = NULL;
 
 /*
 **==============================================================================
@@ -37,7 +38,7 @@ bool oe_is_switchless_initialized()
 */
 oe_result_t oe_handle_init_switchless(uint64_t arg_in)
 {
-    oe_result_t result = OE_OK;
+    oe_result_t result = OE_UNEXPECTED;
     oe_switchless_call_manager_t* manager = NULL;
     oe_switchless_call_manager_t safe_manager;
     size_t contexts_size, threads_size;
@@ -63,9 +64,13 @@ oe_result_t oe_handle_init_switchless(uint64_t arg_in)
         OE_RAISE(OE_INVALID_PARAMETER);
     }
 
+    /* lfence after checks. */
+    oe_lfence();
+
     // Copy the worker context array pointer and its size to avoid TOCTOU
     _host_worker_count = safe_manager.num_host_workers;
     _host_worker_contexts = safe_manager.host_worker_contexts;
+    result = OE_OK;
 
 done:
     return result;

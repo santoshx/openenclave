@@ -19,7 +19,7 @@ bool oe_configure_arena_capacity(size_t cap);
 
 void* oe_arena_malloc(size_t size);
 
-void* oe_arena_calloc(size_t size);
+void* oe_arena_calloc(size_t num, size_t size);
 
 void oe_arena_free_all();
 

@@ -8,13 +8,13 @@
 #include <openenclave/internal/utils.h>
 #include <string.h>
 
-#define ALIGNMENT sizeof(uint64_t)
+#define ALIGNMENT (sizeof(uint64_t) * 2)
 
 // the per-thread shared memory pool
-__thread shared_memory_arena_t arena = {0};
+static __thread shared_memory_arena_t arena = {0};
 
 // the global list of shared memory pools
-shared_memory_arena_t* _arena_list = NULL;
+static shared_memory_arena_t* _arena_list = NULL;
 
 static oe_spinlock_t _arena_list_lock = OE_SPINLOCK_INITIALIZER;
 
@@ -46,7 +46,7 @@ void* oe_arena_malloc(size_t size)
     {
         void* buffer = oe_allocate_arena(capacity);
         if (buffer == NULL)
-            OE_RAISE(OE_OUT_OF_MEMORY);
+            return NULL;
         arena.buffer = (uint8_t*)buffer;
         arena.capacity = capacity;
         arena.used = 0;
@@ -62,7 +62,8 @@ void* oe_arena_malloc(size_t size)
     total_size = oe_round_up_to_multiple(size, ALIGNMENT);
 
     // check for overflow
-    OE_CHECK(total_size < size);
+    if (total_size < size)
+        return NULL;
 
     // check for capacity
     size_t used_after;
@@ -75,16 +76,18 @@ void* oe_arena_malloc(size_t size)
         arena.used = used_after;
         return addr;
     }
-    else
-        OE_RAISE(OE_OUT_OF_MEMORY);
 
 done:
     return NULL;
 }
 
-void* oe_arena_calloc(size_t size)
+void* oe_arena_calloc(size_t num, size_t size)
 {
-    void* ptr = oe_arena_malloc(size);
+    size_t total = 0;
+    if (oe_safe_mul_sizet(num, size, &total) != OE_OK)
+        return NULL;
+
+    void* ptr = oe_arena_malloc(total);
     if (ptr != NULL)
     {
         memset(ptr, 0, size);

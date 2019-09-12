@@ -49,7 +49,8 @@ bool oe_atomic_compare_and_swap(
     int64_t newval)
 {
 #if defined(__GNUC__)
-    return __sync_bool_compare_and_swap(dest, old, newval);
+    return __atomic_compare_exchange_n(
+        dest, &old, newval, 1, __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE);
 #elif defined(_MSC_VER)
     return _InterlockedCompareExchange64(dest, newval, old) == old;
 #else
@@ -64,7 +65,8 @@ bool oe_atomic_compare_and_swap_ptr(
     void* newptr)
 {
 #if defined(__GNUC__)
-    return __sync_bool_compare_and_swap(dest, old, newptr);
+    return __atomic_compare_exchange_n(
+        dest, &old, newptr, 1, __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE);
 #elif defined(_MSC_VER)
     return _InterlockedCompareExchangePointer(dest, newptr, old) == old;
 #else

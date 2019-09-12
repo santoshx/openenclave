@@ -388,8 +388,6 @@ static void _handle_ecall(
         case OE_ECALL_CALL_ENCLAVE_FUNCTION:
         {
             arg_out = _handle_call_enclave_function(arg_in);
-            /* clear up shared memory upon ERET */
-            oe_arena_free_all();
             break;
         }
         case OE_ECALL_DESTRUCTOR:
@@ -399,9 +397,6 @@ static void _handle_ecall(
 
             /* Call all finalization functions */
             oe_call_fini_functions();
-
-            /* Free shared memory arena upon destroying enclave */
-            oe_teardown_arena();
 
 #if defined(OE_USE_DEBUG_MALLOC)
 
@@ -437,6 +432,12 @@ static void _handle_ecall(
     }
 
 done:
+
+    // Free shared memory arena before we clear TLS */
+    if (td->depth == 1)
+    {
+        oe_teardown_arena();
+    }
 
     /* Remove ECALL context from front of td_t.ecalls list */
     td_pop_callsite(td);
@@ -573,7 +574,7 @@ oe_result_t oe_call_host_function_by_table_id(
         OE_RAISE(OE_INVALID_PARAMETER);
 
     /* Initialize the arguments */
-    args = switchless ? oe_arena_calloc(sizeof(*args))
+    args = switchless ? oe_arena_calloc(1, sizeof(*args))
                       : oe_host_calloc(1, sizeof(*args));
 
     if (args == NULL)
@@ -606,6 +607,7 @@ oe_result_t oe_call_host_function_by_table_id(
             // Wait until args.result is set by the host worker.
             while (args->result == __OE_RESULT_MAX)
             {
+                OE_ATOMIC_MEMORY_BARRIER_ACQUIRE();
                 /* Yield to CPU */
                 asm volatile("pause");
             }

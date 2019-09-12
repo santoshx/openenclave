@@ -79,8 +79,8 @@ int main(int argc, const char* argv[])
         enc_echo_switchless(
             enclave, &return_val, "Hello World", out, repeats) == OE_OK);
     clock_gettime(CLOCK_REALTIME, &end);
-    switchless_microseconds += (end.tv_sec - start.tv_sec) * 1000000.0 +
-                               (end.tv_nsec - start.tv_nsec) / 1000.0;
+    switchless_microseconds += (double)(end.tv_sec - start.tv_sec) * 1000000.0 +
+                               (double)(end.tv_nsec - start.tv_nsec) / 1000.0;
 
     double regular_microseconds = 0;
     clock_gettime(CLOCK_REALTIME, &start);
@@ -88,8 +88,8 @@ int main(int argc, const char* argv[])
         enc_echo_regular(enclave, &return_val, "Hello World", out, repeats) ==
         OE_OK);
     clock_gettime(CLOCK_REALTIME, &end);
-    regular_microseconds += (end.tv_sec - start.tv_sec) * 1000000.0 +
-                            (end.tv_nsec - start.tv_nsec) / 1000.0;
+    regular_microseconds += (double)(end.tv_sec - start.tv_sec) * 1000000.0 +
+                            (double)(end.tv_nsec - start.tv_nsec) / 1000.0;
 
     result = oe_terminate_enclave(enclave);
     OE_TEST(result == OE_OK);
