@@ -138,6 +138,13 @@ elseif(OE_TRUSTZONE)
   add_subdirectory(optee)
 endif()
 
+##==============================================================================
+##
+## These common rules configure targets, libraries and dependencies based on
+## arch and os agnostic logic
+##
+##==============================================================================
+
 # Common host verification files that work on any OS/architecture.
 list(APPEND PLATFORM_HOST_ONLY_SRC
   ../common/datetime.c
