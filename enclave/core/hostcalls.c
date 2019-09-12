@@ -11,7 +11,7 @@
 #include <openenclave/internal/print.h>
 #include <openenclave/internal/stack_alloc.h>
 
-#include "shm.h"
+#include "arena.h"
 #include "tee_t.h"
 
 void* oe_host_malloc(size_t size)
@@ -167,7 +167,7 @@ void* oe_allocate_switchless_ocall_buffer(size_t size)
 void oe_free_switchless_ocall_buffer(void* buffer)
 {
     OE_UNUSED(buffer);
-    oe_arena_clear();
+    oe_arena_free_all();
 }
 
 int oe_host_write(int device, const char* str, size_t len)

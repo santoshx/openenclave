@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef _OE_SHM_H
-#define _OE_SHM_H
+#ifndef _OE_ARENA_H
+#define _OE_ARENA_H
 
 #include <openenclave/bits/types.h>
 
@@ -15,14 +15,14 @@ typedef struct _shared_memory_arena_t
     struct _shared_memory_arena_t* next;
 } shared_memory_arena_t;
 
-bool oe_configure_shm_capacity(size_t cap);
+bool oe_configure_arena_capacity(size_t cap);
 
 void* oe_arena_malloc(size_t size);
 
 void* oe_arena_calloc(size_t size);
 
-void oe_arena_clear();
+void oe_arena_free_all();
 
-void oe_arena_destroy();
+void oe_teardown_arena();
 
-#endif /* _OE_SHM_H */
+#endif /* _OE_ARENA_H */

@@ -66,7 +66,7 @@ typedef void (*oe_ocall_func_t)(
     size_t* output_bytes_written);
 
 /**
- * Types of configurations passed into oe_create_enclave
+ * Types of configurations passed into **oe_create_enclave**
  */
 typedef enum _oe_enclave_config_type
 {
@@ -74,23 +74,37 @@ typedef enum _oe_enclave_config_type
 } oe_enclave_config_type_t;
 
 /**
- * The configuration for switchless calls.
+ * The configuration for context-switchless calls.
  */
 typedef struct _oe_enclave_config_context_switchless
 {
-    // The max number of worker threads for switchless ocalls and ecalls.
-    // The actual number of threads launched could be capped for performance
-    // reasons.
+    /**
+     * The max number of worker threads for context-switchless ocalls.
+     * The actual number of threads launched could be capped for performance
+     * reasons.
+     */
     size_t max_host_workers;
+    /**
+     * Context-switchless ecalls are not enabled yet. The max number of enclave
+     * workers should be 0.
+     */
     size_t max_enclave_workers;
 } oe_enclave_config_context_switchless_t;
 
 /**
- * The uniform structure type containing a specifc type of configuration.
+ * The uniform structure type containing a specific type of enclave
+ * configuration.
  */
 typedef struct _oe_enclave_config
 {
+    /**
+     * The type of the configuration in **u**
+     */
     oe_enclave_config_type_t config_type;
+    /**
+     * The specific configuration for the enclave, such as configuring
+     * context-switchless calls.
+     */
     union {
         const oe_enclave_config_context_switchless_t* context_switchless_config;
         /* Add new configuration types here. */

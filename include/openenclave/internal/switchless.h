@@ -14,11 +14,11 @@ typedef struct _host_worker_thread_context
     volatile oe_call_host_function_args_t* call_arg;
     volatile bool is_stopping;
     oe_enclave_t* enclave;
-} host_worker_thread_context_t;
+} oe_host_worker_context_t;
 
 typedef struct _oe_switchless_call_manager
 {
-    host_worker_thread_context_t* host_worker_contexts;
+    oe_host_worker_context_t* host_worker_contexts;
     oe_thread_t* host_worker_threads;
     size_t num_host_workers;
 } oe_switchless_call_manager_t;

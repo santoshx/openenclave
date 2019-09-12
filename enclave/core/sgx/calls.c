@@ -21,8 +21,8 @@
 #include <openenclave/internal/trace.h>
 #include <openenclave/internal/utils.h>
 #include "../../sgx/report.h"
+#include "../arena.h"
 #include "../atexit.h"
-#include "../shm.h"
 #include "../switchlesscalls.h"
 #include "asmdefs.h"
 #include "cpuid.h"
@@ -389,7 +389,7 @@ static void _handle_ecall(
         {
             arg_out = _handle_call_enclave_function(arg_in);
             /* clear up shared memory upon ERET */
-            oe_arena_clear();
+            oe_arena_free_all();
             break;
         }
         case OE_ECALL_DESTRUCTOR:
@@ -400,8 +400,8 @@ static void _handle_ecall(
             /* Call all finalization functions */
             oe_call_fini_functions();
 
-            /* Free shared memory upon destroying enclave */
-            oe_arena_destroy();
+            /* Free shared memory arena upon destroying enclave */
+            oe_teardown_arena();
 
 #if defined(OE_USE_DEBUG_MALLOC)
 
@@ -896,7 +896,7 @@ void oe_abort(void)
     }
 
     // Free the shared memory pools
-    oe_arena_destroy();
+    oe_teardown_arena();
 
     // Return to the latest ECALL.
     _handle_exit(OE_CODE_ERET, 0, __oe_enclave_status);

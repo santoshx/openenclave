@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#include "shm.h"
+#include "arena.h"
 #include <openenclave/bits/safemath.h>
 #include <openenclave/internal/raise.h>
 #include <openenclave/internal/thread.h>
@@ -23,8 +23,8 @@ size_t capacity = 1024 * 1024;
 
 size_t max_capacity = 1 << 30;
 
-void* oe_reserve_arena(size_t capacity);
-void oe_unreserve_arena(void* buffer);
+void* oe_allocate_arena(size_t capacity);
+void oe_deallocate_arena(void* buffer);
 
 bool oe_configure_arena_capacity(size_t cap)
 {
@@ -41,9 +41,10 @@ void* oe_arena_malloc(size_t size)
     oe_result_t result = OE_UNEXPECTED;
     size_t total_size = 0;
 
+    // Create the anera if it hasn't been created.
     if (arena.buffer == NULL)
     {
-        void* buffer = oe_reserve_arena(capacity);
+        void* buffer = oe_allocate_arena(capacity);
         if (buffer == NULL)
             OE_RAISE(OE_OUT_OF_MEMORY);
         arena.buffer = (uint8_t*)buffer;
@@ -91,18 +92,18 @@ void* oe_arena_calloc(size_t size)
     return ptr;
 }
 
-void oe_arena_clear()
+void oe_arena_free_all()
 {
     arena.used = 0;
 }
 
 // Free all shared memory pools in the global list
-void oe_arena_destroy()
+void oe_teardown_arena()
 {
     shared_memory_arena_t* next = _arena_list;
     while (next != NULL)
     {
-        oe_unreserve_arena(next->buffer);
+        oe_deallocate_arena(next->buffer);
         shared_memory_arena_t* current = next;
         next = next->next;
         memset(current, 0, sizeof(arena));

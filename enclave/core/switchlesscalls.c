@@ -10,7 +10,7 @@
 static size_t _host_worker_count = 0;
 
 // The array of host worker contexts. Initialized by host through ECALL
-static host_worker_thread_context_t* _host_worker_contexts;
+static oe_host_worker_context_t* _host_worker_contexts;
 
 /*
 **==============================================================================
@@ -49,7 +49,7 @@ oe_result_t oe_handle_init_switchless(uint64_t arg_in)
     safe_manager = *manager;
 
     contexts_size =
-        sizeof(host_worker_thread_context_t) * safe_manager.num_host_workers;
+        sizeof(oe_host_worker_context_t) * safe_manager.num_host_workers;
     threads_size = sizeof(oe_thread_t) * safe_manager.num_host_workers;
 
     // Ensure the switchless manager and its arrays are outside of enclave

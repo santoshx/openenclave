@@ -418,11 +418,19 @@ static oe_result_t _configure_enclave(
     {
         switch (configs[i].config_type)
         {
-            // Configure the switchless calls, such as the number of workers.
+            // Configure the switchless ocalls, such as the number of workers.
             case OE_ENCLAVE_CONFIG_CONTEXT_SWITCHLESS:
             {
                 size_t max_host_workers =
+                    configs[i].u.context_switchless_config->max_host_workers;
+                size_t max_enclave_workers =
                     configs[i].u.context_switchless_config->max_enclave_workers;
+
+                // Switchless ecalls are not enabled yet. Make sure the max
+                // number of enclave workers is always 0.
+                if (max_enclave_workers != 0)
+                    OE_RAISE(OE_INVALID_PARAMETER);
+
                 OE_CHECK(
                     oe_start_switchless_manager(enclave, max_host_workers));
                 break;

@@ -86,7 +86,7 @@ static void _initialize_enclave_host()
     oe_register_syscall_ocall_function_table();
 }
 
-oe_result_t _handle_call_host_function(
+static oe_result_t _handle_call_host_function(
     void* inout_buffer,
     size_t inout_buffer_size,
     void* input_buffer,
