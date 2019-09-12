@@ -101,59 +101,16 @@ add_custom_target(syscall_untrusted_edl
 
 # OS specific but arch agnostic files.
 if (UNIX)
-  set(PLATFORM_HOST_ONLY_SRC
-    ../common/cert.c
-    crypto/openssl/asn1.c
-    crypto/openssl/cert.c
-    crypto/openssl/crl.c
-    crypto/openssl/ec.c
-    crypto/openssl/init.c
-    crypto/openssl/key.c
-    crypto/openssl/rsa.c
-    crypto/openssl/sha.c
-    linux/hostthread.c)
-
-  set(PLATFORM_SDK_ONLY_SRC
-    ../common/asn1.c
-    crypto/openssl/hmac.c
-    crypto/openssl/random.c
-    linux/syscall.c
-    linux/time.c
-    linux/windows.c)
+  add_subdirectory(linux)
 elseif (WIN32)
-  set(PLATFORM_HOST_ONLY_SRC
-    ../common/cert.c
-    crypto/bcrypt/cert.c
-    crypto/bcrypt/crl.c
-    crypto/bcrypt/ec.c
-    crypto/bcrypt/key.c
-    crypto/bcrypt/rsa.c
-    crypto/bcrypt/sha.c
-    crypto/bcrypt/pem.c
-    windows/hostthread.c)
-
-  set(PLATFORM_SDK_ONLY_SRC
-    ../3rdparty/mbedtls/mbedtls/library/bignum.c
-    ../common/asn1.c
-    ../common/cert.c
-    crypto/bcrypt/cert.c
-    crypto/bcrypt/crl.c
-    crypto/bcrypt/ec.c
-    crypto/bcrypt/hmac.c
-    crypto/bcrypt/key.c
-    crypto/bcrypt/pem.c
-    crypto/bcrypt/random.c
-    crypto/bcrypt/rsa.c
-    crypto/bcrypt/sha.c
-    windows/hostthread.c
-    windows/syscall.c
-    windows/time.c)
+  add_subdirectory(windows)
 else()
   message(FATAL_ERROR "Unknown OS. Only supported OSes are Linux and Windows")
 endif()
 
 # SGX specific files.
 if (OE_SGX)
+
   ##==============================================================================
   ##
   ## These rules generate the edge routines for the internal SGX-specific
@@ -161,7 +118,6 @@ if (OE_SGX)
   ##
   ##==============================================================================
   
-  if(OE_SGX)
   set(SGX_EDL_FILE ${EDL_DIR}/sgx/sgx.edl)
   
   add_custom_command(
@@ -171,7 +127,6 @@ if (OE_SGX)
   
   add_custom_target(sgx_untrusted_edl
       DEPENDS sgx_u.h sgx_u.c sgx_args.h)
-  endif()
 
   list(APPEND PLATFORM_HOST_ONLY_SRC
     ../common/sgx/qeidentity.c
