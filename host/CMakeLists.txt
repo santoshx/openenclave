@@ -241,6 +241,9 @@ if(NOT "${OEHOST_VERIFY_PRIVATE_LIBRARIES}" STREQUAL "")
   target_link_libraries(oehostverify PRIVATE ${OEHOST_PRIVATE_LIBRARIES})
 endif()
 
+if(NOT "${OEHOST_APP_INTERFACE_LIBRARIES}" STREQUAL "")
+  target_link_libraries(oehostapp INTERFACE  ${OEHOST_APP_INTERFACE_LIBRARIES})
+endif()
 
 # TODO: Replace these with `find_package` and add as dependencies to
 # the CMake package.
@@ -367,12 +370,7 @@ target_compile_definitions(oehostverify
 set_property(TARGET oehost PROPERTY
   ARCHIVE_OUTPUT_DIRECTORY ${OE_LIBDIR}/openenclave/host)
 
-target_link_libraries(oehostapp INTERFACE oehost)
-
 if (UNIX)
-  target_link_libraries(oehostapp INTERFACE
-      -rdynamic
-      -Wl,-z,noexecstack)
   target_link_libraries(oehostverify INTERFACE
       -rdynamic
       -Wl,-z,noexecstack)
