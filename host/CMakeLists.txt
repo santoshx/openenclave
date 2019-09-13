@@ -238,12 +238,17 @@ if(NOT "${OEHOST_VERIFY_PUBLIC_LIBRARIES}" STREQUAL "")
 endif()
 
 if(NOT "${OEHOST_VERIFY_PRIVATE_LIBRARIES}" STREQUAL "")
-  target_link_libraries(oehostverify PRIVATE ${OEHOST_PRIVATE_LIBRARIES})
+  target_link_libraries(oehostverify PRIVATE ${OEHOST_VERIFY_PRIVATE_LIBRARIES})
+endif()
+
+if(NOT "${OEHOST_VERIFY_INTERFACE_LIBRARIES}" STREQUAL "")
+  target_link_libraries(oehostverify INTERFACE  ${OEHOST_VERIFY_INTERFACE_LIBRARIES})
 endif()
 
 if(NOT "${OEHOST_APP_INTERFACE_LIBRARIES}" STREQUAL "")
   target_link_libraries(oehostapp INTERFACE  ${OEHOST_APP_INTERFACE_LIBRARIES})
 endif()
+
 
 # TODO: Replace these with `find_package` and add as dependencies to
 # the CMake package.
@@ -369,12 +374,6 @@ target_compile_definitions(oehostverify
 # TODO: Remove this hard coded output directory.
 set_property(TARGET oehost PROPERTY
   ARCHIVE_OUTPUT_DIRECTORY ${OE_LIBDIR}/openenclave/host)
-
-if (UNIX)
-  target_link_libraries(oehostverify INTERFACE
-      -rdynamic
-      -Wl,-z,noexecstack)
-endif ()
 
 # Install targets
 install(TARGETS oehost EXPORT openenclave-targets

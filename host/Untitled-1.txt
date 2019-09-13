@@ -200,12 +200,12 @@ list(APPEND OEHOST_DEPENDENCIES
   syscall_untrusted_edl
   tee_untrusted_edl)
 
-###########
 # common oehost directories
 # For including edge routines.
 list(APPEND OEHOST_PRIVATE_DIRECTORIES
   ${CMAKE_CURRENT_BINARY_DIR})
 
+#####
 # Common oehost compile definitions
 list(APPEND OEHOST_TARGET_COMPILE_PUBLIC_DEFINITIONS
   # NOTE: This definition is public to the rest of our project's
