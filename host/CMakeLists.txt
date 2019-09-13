@@ -296,8 +296,6 @@ endif ()
 if (UNIX)
 
   if (OE_TRUSTZONE)
-    target_include_directories(oehost PRIVATE
-      ${OE_TZ_OPTEE_CLIENT_INC})
   endif ()
 elseif (WIN32)
   target_include_directories(oehost PRIVATE
