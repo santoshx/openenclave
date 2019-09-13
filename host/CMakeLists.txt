@@ -190,10 +190,6 @@ list(APPEND OEHOST_DEPENDENCIES
   syscall_untrusted_edl
   tee_untrusted_edl)
 
-# common oehost directories
-# For including edge routines.
-list(APPEND OEHOST_PRIVATE_DIRECTORIES
-  ${CMAKE_CURRENT_BINARY_DIR})
 ##==============================================================================
 ##
 ## Create libraries
@@ -259,13 +255,8 @@ endif()
 ##
 ##==============================================================================
 
-if(NOT "${OEHOST_PRIVATE_DIRECTORIES}" STREQUAL "")
-  target_include_directories(oehost PRIVATE ${OEHOST_PRIVATE_DIRECTORIES})
-endif()
 
-if(NOT "${OEHOST_VERIFY_PRIVATE_DIRECTORIES}" STREQUAL "")
-  target_include_directories(oehostverify PRIVATE  ${OEHOST_VERIFY_PRIVATE_DIRECTORIES})
-endif()
+### TODOOOO
 
 # TODO: Replace these with `find_package` and add as dependencies to
 # the CMake package.
@@ -293,15 +284,20 @@ if (UNIX)
   endif ()
 endif ()
 
+find_package(Threads REQUIRED)
+
 if (UNIX)
 
   if (OE_TRUSTZONE)
+    target_include_directories(oehost PRIVATE
+      ${OE_TZ_OPTEE_CLIENT_INC})
   endif ()
 elseif (WIN32)
   target_include_directories(oehost PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
   target_include_directories(oehostverify PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
+  target_link_libraries(oehostverify PRIVATE bcrypt Crypt32)
 
   # TODO: Handle TrustZone on Windows.
 endif ()
