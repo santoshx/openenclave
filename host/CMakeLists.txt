@@ -190,6 +190,10 @@ list(APPEND OEHOST_DEPENDENCIES
   syscall_untrusted_edl
   tee_untrusted_edl)
 
+# common oehost directories
+# For including edge routines.
+list(APPEND OEHOST_PRIVATE_DIRECTORIES
+  ${CMAKE_CURRENT_BINARY_DIR})
 ##==============================================================================
 ##
 ## Create libraries
@@ -249,6 +253,19 @@ if(NOT "${OEHOST_APP_INTERFACE_LIBRARIES}" STREQUAL "")
   target_link_libraries(oehostapp INTERFACE  ${OEHOST_APP_INTERFACE_LIBRARIES})
 endif()
 
+##==============================================================================
+##
+## Link target directories, as needed
+##
+##==============================================================================
+
+if(NOT "${OEHOST_PRIVATE_DIRECTORIES}" STREQUAL "")
+  target_include_directories(oehost PRIVATE ${OEHOST_PRIVATE_DIRECTORIES})
+endif()
+
+if(NOT "${OEHOST_VERIFY_PRIVATE_DIRECTORIES}" STREQUAL "")
+  target_include_directories(oehostverify PRIVATE  ${OEHOST_VERIFY_PRIVATE_DIRECTORIES})
+endif()
 
 # TODO: Replace these with `find_package` and add as dependencies to
 # the CMake package.
