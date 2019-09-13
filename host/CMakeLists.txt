@@ -237,6 +237,11 @@ if(NOT "${OEHOST_VERIFY_PUBLIC_LIBRARIES}" STREQUAL "")
   target_link_libraries(oehostverify PUBLIC ${OEHOST_VERIFY_PUBLIC_LIBRARIES})
 endif()
 
+if(NOT "${OEHOST_VERIFY_PRIVATE_LIBRARIES}" STREQUAL "")
+  target_link_libraries(oehostverify PRIVATE ${OEHOST_PRIVATE_LIBRARIES})
+endif()
+
+
 # TODO: Replace these with `find_package` and add as dependencies to
 # the CMake package.
 if (UNIX)
@@ -264,7 +269,6 @@ if (UNIX)
 endif ()
 
 if (UNIX)
-  target_link_libraries(oehostverify PRIVATE crypto dl Threads::Threads)
 
   if (OE_TRUSTZONE)
     target_include_directories(oehost PRIVATE
@@ -275,7 +279,6 @@ elseif (WIN32)
     ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
   target_include_directories(oehostverify PRIVATE
     ${CMAKE_SOURCE_DIR}/3rdparty/mbedtls/mbedtls/include)
-  target_link_libraries(oehostverify PRIVATE bcrypt Crypt32)
 
   # TODO: Handle TrustZone on Windows.
 endif ()
